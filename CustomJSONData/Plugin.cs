@@ -1,4 +1,6 @@
-﻿using IllusionPlugin;
+﻿using Harmony;
+using IllusionPlugin;
+using System.Reflection;
 using UnityEngine.SceneManagement;
 
 namespace CustomJSONData
@@ -11,6 +13,8 @@ namespace CustomJSONData
         {
             SceneManager.activeSceneChanged += SceneManagerOnActiveSceneChanged;
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+            var harmony = HarmonyInstance.Create("com.arti.BeatSaber.CustomJSONData");
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
         private void SceneManagerOnActiveSceneChanged(Scene arg0, Scene arg1)
