@@ -4,11 +4,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+using CustomDataConverter = Newtonsoft.Json.Converters.ExpandoObjectConverter;
+
 namespace CustomJSONData.CustomBeatmap
 {
     public class CustomBeatmapSaveData
     {
-        internal class CustomDataConverter : ExpandoObjectConverter { }
+        // internal class CustomDataConverter : ExpandoObjectConverter { }
         public CustomBeatmapSaveData() { }
         public CustomBeatmapSaveData(List<BeatmapSaveData.EventData> events, List<NoteData> notes, List<ObstacleData> obstacles)
         {
