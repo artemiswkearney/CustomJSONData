@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace CustomJSONData.CustomBeatmap
 {
-    class CustomBeatmapDataLoader
+    public class CustomBeatmapDataLoader
     {
         // Token: 0x0600125E RID: 4702 RVA: 0x00040454 File Offset: 0x0003E654
         private static float GetRealTimeFromBPMTime(float bmpTime, float beatsPerMinute, float shuffle, float shufflePeriod)
@@ -29,7 +29,8 @@ namespace CustomJSONData.CustomBeatmap
         }
 
         // Token: 0x0600125F RID: 4703 RVA: 0x000404A0 File Offset: 0x0003E6A0
-        public static CustomBeatmapData GetBeatmapDataFromBeatmapSaveData(List<CustomBeatmapSaveData.NoteData> notesSaveData, List<CustomBeatmapSaveData.ObstacleData> obstaclesSaveData, List<BeatmapSaveData.EventData> eventsSaveData, float beatsPerMinute, float shuffle, float shufflePeriod, dynamic customData)
+        public static CustomBeatmapData GetBeatmapDataFromBeatmapSaveData(List<CustomBeatmapSaveData.NoteData> notesSaveData, List<CustomBeatmapSaveData.ObstacleData> obstaclesSaveData, List<BeatmapSaveData.EventData> eventsSaveData, float beatsPerMinute, float  shuffle, float shufflePeriod, dynamic customData, List<String> warnings, List<String> suggestions, List<String> requirements,
+            CustomBeatmapSaveData.RGBColor leftColor, CustomBeatmapSaveData.RGBColor rightColor, int? noteJumpStartBeatOffset)
         {
             try
             {
@@ -133,7 +134,7 @@ namespace CustomJSONData.CustomBeatmap
                     array2[j] = new BeatmapLineData();
                     array2[j].beatmapObjectsData = array[j].ToArray();
                 }
-                return new CustomBeatmapData(array2, list.ToArray(), customData);
+                return new CustomBeatmapData(array2, list.ToArray(), customData, warnings, suggestions, requirements, leftColor, rightColor, noteJumpStartBeatOffset);
             } catch (Exception e)
             {
                 Debug.LogError("Exception loading CustomBeatmap!");
