@@ -20,12 +20,12 @@ namespace CustomJSONData.Events
         public readonly int numeric = 0;
 
         /// <summary>
-        /// Overrides numeric priority, guaranteeing the handler with this Priority will run before handlers of the same sandboxingLevel registered through EventSystemInstances with ids in this collection, except where this would create cycles. To break cycles, constraints are removed in ascending order of priority.
+        /// Overrides numeric priority, guaranteeing the handler with this Priority will run before handlers of the same sandboxingLevel registered through EventSystemInstances with ids in this collection, except where this would create cycles. To break cycles, constraints are removed in ascending order of priority. Can be null.
         /// </summary>
         public readonly ReadOnlyCollection<string> before;
 
         /// <summary>
-        /// Overrides numeric priority, guaranteeing the handler with this Priority will run after handlers of the same sandboxingLevel registered through EventSystemInstances with ids in this collection, except where this would create cycles. To break cycles, constraints are removed in ascending order of priority.
+        /// Overrides numeric priority, guaranteeing the handler with this Priority will run after handlers of the same sandboxingLevel registered through EventSystemInstances with ids in this collection, except where this would create cycles. To break cycles, constraints are removed in ascending order of priority. Can be null.
         /// </summary>
         public readonly ReadOnlyCollection<string> after;
 
