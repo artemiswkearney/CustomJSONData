@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -110,7 +111,7 @@ namespace CustomJSONData.CustomBeatmap
         [JsonConverter(typeof(CustomDataConverter))]
         public dynamic customData;
 
-        [JsonProperty]
+        [JsonProperty(ItemConverterType = typeof(BeatmapEventConverter))]
         protected List<BeatmapSaveData.EventData> _events;
 
         [JsonProperty]
@@ -326,6 +327,30 @@ namespace CustomJSONData.CustomBeatmap
 
             [JsonProperty]
             public float b;
+        }
+
+        /// <summary>
+        /// Used to deserialize vanilla Beat Saber lighting events, as Newtonsoft.JSON doesn't get them right on its own
+        /// </summary>
+        public class BeatmapEventConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(BeatmapSaveData.EventData);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                JObject jo = JObject.Load(reader);
+                return new BeatmapSaveData.EventData((float)jo["_time"], (BeatmapEventType)((int)jo["_type"]), (int)jo["_value"]);
+            }
+
+            public override bool CanWrite => false;
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

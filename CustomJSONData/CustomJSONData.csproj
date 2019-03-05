@@ -82,9 +82,11 @@
     <Compile Include="CustomBeatmap\CustomNoteData.cs" />
     <Compile Include="CustomBeatmap\CustomObstacleData.cs" />
     <Compile Include="Events\EventSystemInstance.cs" />
+    <Compile Include="Events\Priority.cs" />
     <Compile Include="HarmonyPatches\BeatmapDataLoaderGetBeatmapDataFromJson.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Trees.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
