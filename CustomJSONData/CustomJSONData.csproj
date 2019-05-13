@@ -83,10 +83,13 @@
     <Compile Include="CustomBeatmap\CustomObstacleData.cs" />
     <Compile Include="Events\EventSystemInstance.cs" />
     <Compile Include="Events\Priority.cs" />
+    <Compile Include="Events\Tracing\MetaNode.cs" />
+    <Compile Include="Events\Tracing\ReturnMetaNode.cs" />
     <Compile Include="HarmonyPatches\BeatmapDataLoaderGetBeatmapDataFromJson.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Trees.cs" />
+    <Compile Include="Utils\Ref.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
