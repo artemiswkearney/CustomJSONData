@@ -20,53 +20,15 @@ namespace CustomJSONData.HarmonyExtensions
         })]
     class BeatmapDataLoaderGetBeatmapDataFromJson
     {
-        public static bool Prefix(string json, float shuffle, float shufflePeriod, ref BeatmapData __result)
+        public static bool Prefix(string json, float beatsPerMinute, float shuffle, float shufflePeriod, ref BeatmapData __result)
         {
+
             CustomBeatmapSaveData saveData = CustomBeatmapSaveData.DeserializeFromJSONString(json);
             if (saveData == null) return true;
 
-            __result = CustomBeatmapDataLoader.GetBeatmapDataFromBeatmapSaveData(saveData.notes, saveData.obstacles, saveData.events, saveData.beatsPerMinute, shuffle, shufflePeriod, saveData.customData, saveData._warnings, saveData._suggestions, saveData._requirements, saveData._colorLeft, saveData._colorRight, saveData._noteJumpStartBeatOffset);
+            __result = CustomBeatmapDataLoader.GetBeatmapDataFromBeatmapSaveData(saveData.notes, saveData.obstacles, saveData.events, beatsPerMinute, shuffle, shufflePeriod, saveData.customEvents ?? new List<CustomBeatmapSaveData.CustomEventData>());
             if (!(__result is CustomBeatmapData)) return true;
             CustomBeatmapData beatmapData = __result as CustomBeatmapData;
-            if (beatmapData.customData == null)
-            {
-                Console.WriteLine("[CustomJSONData] Loaded beatmap with no custom data.");
-            }
-            else
-            {
-                Console.WriteLine("[CustomJSONData] Loaded beatmap with custom data!");
-                Console.WriteLine("[CustomJSONData] Custom data type: " + ((CustomBeatmapData)__result).customData);
-                foreach(var pair in (IDictionary<String, Object>)((CustomBeatmapData)__result).customData)
-                {
-                    Console.WriteLine("\"" + pair.Key + "\": " + pair.Value);
-                }
-                Console.WriteLine("Other CustomData locations ignored.");
-            }
-            if (beatmapData.warnings != null)
-            {
-                Console.WriteLine("[CustomJSONData] Warnings:");
-                beatmapData.warnings.Do(Console.WriteLine);
-            }
-            if (beatmapData.suggestions != null)
-            {
-                Console.WriteLine("[CustomJSONData] Suggestions:");
-                beatmapData.suggestions.Do(Console.WriteLine);
-            }
-            if (beatmapData.requirements != null)
-            {
-                Console.WriteLine("[CustomJSONData] Requirements:");
-                beatmapData.requirements.Do(Console.WriteLine);
-            }
-            if (beatmapData.leftColor != null && beatmapData.rightColor != null)
-            {
-                Console.WriteLine("[CustomJSONData] Colors:");
-                Console.WriteLine("Left: " + beatmapData.leftColor.r + ", " + beatmapData.leftColor.g + ", " + beatmapData.leftColor.b);
-                Console.WriteLine("Right: " + beatmapData.rightColor.r + ", " + beatmapData.rightColor.g + ", " + beatmapData.rightColor.b);
-            }
-            if (beatmapData.noteJumpStartBeatOffset != null)
-            {
-                Console.WriteLine("[CustomJSONData] noteJumpStartBeatOffset: " + beatmapData.noteJumpStartBeatOffset);
-            }
             return false;
         }
     }

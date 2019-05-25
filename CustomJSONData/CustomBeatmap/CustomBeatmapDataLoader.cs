@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using static CustomJSONData.Trees;
 
 namespace CustomJSONData.CustomBeatmap
 {
@@ -29,13 +30,12 @@ namespace CustomJSONData.CustomBeatmap
         }
 
         // Token: 0x0600125F RID: 4703 RVA: 0x000404A0 File Offset: 0x0003E6A0
-        public static CustomBeatmapData GetBeatmapDataFromBeatmapSaveData(List<CustomBeatmapSaveData.NoteData> notesSaveData, List<CustomBeatmapSaveData.ObstacleData> obstaclesSaveData, List<BeatmapSaveData.EventData> eventsSaveData, float beatsPerMinute, float  shuffle, float shufflePeriod, dynamic customData, List<String> warnings, List<String> suggestions, List<String> requirements,
-            CustomBeatmapSaveData.RGBColor leftColor, CustomBeatmapSaveData.RGBColor rightColor, int? noteJumpStartBeatOffset)
+        public static CustomBeatmapData GetBeatmapDataFromBeatmapSaveData(List<CustomBeatmapSaveData.NoteData> notesSaveData, List<CustomBeatmapSaveData.ObstacleData> obstaclesSaveData, List<CustomBeatmapSaveData.EventData> eventsSaveData, float beatsPerMinute, float  shuffle, float shufflePeriod, List<CustomBeatmapSaveData.CustomEventData> customEventsSaveData)
         {
             try
             {
                 // remainder of this method copied from SongLoaderPlugin@12de0cf, with changes:
-                // BeatmapData, NoteData, and ObstacleData replaced with their Custom counterparts
+                // BeatmapData, NoteData, EventData, and ObstacleData replaced with their Custom counterparts
                 // customData fields propagated to new objects
                 List<BeatmapObjectData>[] array = new List<BeatmapObjectData>[4];
                 List<BeatmapEventData> list = new List<BeatmapEventData>(eventsSaveData.Count);
@@ -78,7 +78,7 @@ namespace CustomJSONData.CustomBeatmap
                         num2 = list2[0].time;
                         list2.Clear();
                     }
-                    CustomNoteData noteData3 = new CustomNoteData(num++, realTimeFromBPMTime, lineIndex, lineLayer, startNoteLineLayer, type, cutDirection, float.MaxValue, realTimeFromBPMTime - num2, customData);
+                    CustomNoteData noteData3 = new CustomNoteData(num++, realTimeFromBPMTime, lineIndex, lineLayer, startNoteLineLayer, type, cutDirection, float.MaxValue, realTimeFromBPMTime - num2, customEventsSaveData);
                     int number = lineIndex;
                     if (number < 0)
                         number = 0;
@@ -99,7 +99,7 @@ namespace CustomJSONData.CustomBeatmap
                     ObstacleType type2 = obstacleData.type;
                     float realTimeFromBPMTime3 = GetRealTimeFromBPMTime(obstacleData.duration, beatsPerMinute, shuffle, shufflePeriod);
                     int width = obstacleData.width;
-                    CustomObstacleData item = new CustomObstacleData(num++, realTimeFromBPMTime2, lineIndex2, type2, realTimeFromBPMTime3, width, obstacleData.customData);
+                    CustomObstacleData item = new CustomObstacleData(num++, realTimeFromBPMTime2, lineIndex2, type2, realTimeFromBPMTime3, width, obstacleData._customData);
                     int number2 = lineIndex2;
                     if (number2 < 0)
                         number2 = 0;
@@ -107,18 +107,23 @@ namespace CustomJSONData.CustomBeatmap
                         number2 = 3;
                     array[number2].Add(item);
                 }
-                foreach (BeatmapSaveData.EventData eventData in eventsSaveData)
+                foreach (CustomBeatmapSaveData.EventData eventData in eventsSaveData)
                 {
                     float realTimeFromBPMTime4 = GetRealTimeFromBPMTime(eventData.time, beatsPerMinute, shuffle, shufflePeriod);
                     BeatmapEventType type3 = eventData.type;
                     int value = eventData.value;
-                    BeatmapEventData item2 = new BeatmapEventData(realTimeFromBPMTime4, type3, value);
+                    CustomBeatmapEventData item2 = new CustomBeatmapEventData(realTimeFromBPMTime4, type3, value, eventData.customData);
                     list.Add(item2);
+                }
+                List<CustomEventData> customEvents = new List<CustomEventData>(customEventsSaveData.Count);
+                foreach (CustomBeatmapSaveData.CustomEventData customEventData in customEventsSaveData)
+                {
+                    customEvents.Add(new CustomEventData(GetRealTimeFromBPMTime(customEventData.time, beatsPerMinute, shuffle, shufflePeriod), customEventData.type, customEventData.data));
                 }
                 if (list.Count == 0)
                 {
-                    list.Add(new BeatmapEventData(0f, BeatmapEventType.Event0, 1));
-                    list.Add(new BeatmapEventData(0f, BeatmapEventType.Event4, 1));
+                    list.Add(new CustomBeatmapEventData(0f, BeatmapEventType.Event0, 1, Tree()));
+                    list.Add(new CustomBeatmapEventData(0f, BeatmapEventType.Event4, 1, Tree()));
                 }
                 BeatmapLineData[] array2 = new BeatmapLineData[4];
                 for (int j = 0; j < 4; j++)
@@ -134,7 +139,7 @@ namespace CustomJSONData.CustomBeatmap
                     array2[j] = new BeatmapLineData();
                     array2[j].beatmapObjectsData = array[j].ToArray();
                 }
-                return new CustomBeatmapData(array2, list.ToArray(), customData, warnings, suggestions, requirements, leftColor, rightColor, noteJumpStartBeatOffset);
+                return new CustomBeatmapData(array2, list.ToArray(), customEvents.ToArray());
             } catch (Exception e)
             {
                 Debug.LogError("Exception loading CustomBeatmap!");

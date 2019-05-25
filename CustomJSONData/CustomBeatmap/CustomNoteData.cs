@@ -12,6 +12,10 @@ namespace CustomJSONData.CustomBeatmap
         {
             this.customData = customData;
         }
-        public dynamic customData;
+        public dynamic customData { get; private set; }
+        public override BeatmapObjectData GetCopy()
+        {
+            return new CustomNoteData(id, time, lineIndex, noteLineLayer, startNoteLineLayer, noteType, cutDirection, timeToNextBasicNote, timeToPrevBasicNote, Trees.copy(customData));
+        }
     }
 }

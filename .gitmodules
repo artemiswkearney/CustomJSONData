@@ -1,0 +1,3 @@
+[submodule "CustomJSONData/BS-Plugin-BuildTools"]
+	path = CustomJSONData/BS-Plugin-BuildTools
+	url = git@github.com:beat-saber-modding-group/BS-Plugin-BuildTools.git

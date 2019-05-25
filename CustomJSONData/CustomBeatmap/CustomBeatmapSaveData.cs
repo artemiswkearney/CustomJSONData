@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 using CustomDataConverter = Newtonsoft.Json.Converters.ExpandoObjectConverter;
 
@@ -13,12 +11,12 @@ namespace CustomJSONData.CustomBeatmap
     {
         // internal class CustomDataConverter : ExpandoObjectConverter { }
         public CustomBeatmapSaveData() { }
-        public CustomBeatmapSaveData(List<BeatmapSaveData.EventData> events, List<NoteData> notes, List<ObstacleData> obstacles)
+        public CustomBeatmapSaveData(List<EventData> events, List<NoteData> notes, List<ObstacleData> obstacles)
         {
-            this._version = kCurrentVersion;
-            this._events = events;
-            this._notes = notes;
-            this._obstacles = obstacles;
+            _version = kCurrentVersion;
+            _events = events;
+            _notes = notes;
+            _obstacles = obstacles;
         }
 
         [JsonIgnore]
@@ -26,34 +24,25 @@ namespace CustomJSONData.CustomBeatmap
         {
             get
             {
-                return this._version;
+                return _version;
             }
         }
 
         [JsonIgnore]
-        public float beatsPerMinute
+        public List<EventData> events
         {
             get
             {
-                return this._beatsPerMinute;
+                return _events;
             }
         }
 
         [JsonIgnore]
-        public float noteJumpSpeed
+        public List<CustomEventData> customEvents
         {
             get
             {
-                return this._noteJumpSpeed;
-            }
-        }
-
-        [JsonIgnore]
-        public List<BeatmapSaveData.EventData> events
-        {
-            get
-            {
-                return this._events;
+                return _customEvents;
             }
         }
 
@@ -62,7 +51,7 @@ namespace CustomJSONData.CustomBeatmap
         {
             get
             {
-                return this._notes;
+                return _notes;
             }
         }
 
@@ -71,7 +60,7 @@ namespace CustomJSONData.CustomBeatmap
         {
             get
             {
-                return this._obstacles;
+                return _obstacles;
             }
         }
 
@@ -82,37 +71,24 @@ namespace CustomJSONData.CustomBeatmap
 
         public static CustomBeatmapSaveData DeserializeFromJSONString(string stringData)
         {
-            CustomBeatmapSaveData beatmap = JsonConvert.DeserializeObject<CustomBeatmapSaveData>(stringData, new ExpandoObjectConverter());
+            CustomBeatmapSaveData beatmap = JsonConvert.DeserializeObject<CustomBeatmapSaveData>(stringData, new CustomDataConverter());
             if (beatmap == null || beatmap.version != kCurrentVersion)
             {
-                return null;
+                // return null;
             }
             return beatmap;
         }
 
-        protected const string kCurrentVersion = "1.5.0";
+        protected const string kCurrentVersion = "2.0.0";
 
         [JsonProperty]
         protected string _version;
 
         [JsonProperty]
-        protected float _beatsPerMinute;
+        protected List<EventData> _events;
 
         [JsonProperty]
-        protected float _noteJumpSpeed;
-
-        [JsonProperty]
-        protected float _shuffle;
-
-        [JsonProperty]
-        protected float _shufflePeriod;
-
-        [JsonProperty]
-        [JsonConverter(typeof(CustomDataConverter))]
-        public dynamic customData;
-
-        [JsonProperty(ItemConverterType = typeof(BeatmapEventConverter))]
-        protected List<BeatmapSaveData.EventData> _events;
+        protected List<CustomEventData> _customEvents;
 
         [JsonProperty]
         protected List<NoteData> _notes;
@@ -120,24 +96,130 @@ namespace CustomJSONData.CustomBeatmap
         [JsonProperty]
         protected List<ObstacleData> _obstacles;
 
-        // All fields below this line originate from SongLoaderPlugin
-        [JsonProperty]
-        public List<string> _warnings;
+        [Serializable]
+        public class EventData : BeatmapSaveData.ITime
+        {
+            public EventData() { }
+            public EventData(float time, BeatmapEventType type, int value)
+            {
+                this._time = time;
+                this._type = type;
+                this._value = value;
+            }
 
-        [JsonProperty]
-        public List<string> _suggestions;
+            [JsonIgnore]
+            public float time
+            {
+                get
+                {
+                    return _time;
+                }
+            }
 
-        [JsonProperty]
-        public List<string> _requirements;
+            [JsonIgnore]
+            public BeatmapEventType type
+            {
+                get
+                {
+                    return _type;
+                }
+            }
 
-        [JsonProperty]
-        public RGBColor _colorLeft;
+            [JsonIgnore]
+            public int value
+            {
+                get
+                {
+                    return _value;
+                }
+            }
 
-        [JsonProperty]
-        public RGBColor _colorRight;
+            [JsonIgnore]
+            public dynamic customData
+            {
+                get
+                {
+                    return _customData;
+                }
+            }
 
-        [JsonProperty]
-        public int? _noteJumpStartBeatOffset = null;
+            public void MoveTime(float offset)
+            {
+                _time += offset;
+            }
+
+            [JsonProperty]
+            protected float _time;
+
+            [JsonProperty]
+            protected BeatmapEventType _type;
+
+            [JsonProperty]
+            protected int _value;
+
+            [JsonProperty]
+            [JsonConverter(typeof(CustomDataConverter))]
+            protected dynamic _customData;
+
+            public static implicit operator BeatmapSaveData.EventData(EventData ed)
+            {
+                return new BeatmapSaveData.EventData(ed.time, ed.type, ed.value);
+            }
+        }
+
+        [Serializable]
+        public class CustomEventData : BeatmapSaveData.ITime
+        {
+            public CustomEventData() { }
+            public CustomEventData(float time, string type, dynamic data)
+            {
+                this._time = time;
+                this._type = type;
+                this._data = data;
+            }
+
+            [JsonIgnore]
+            public float time
+            {
+                get
+                {
+                    return _time;
+                }
+            }
+
+            [JsonIgnore]
+            public string type
+            {
+                get
+                {
+                    return _type;
+                }
+            }
+
+            [JsonIgnore]
+            public dynamic data
+            {
+                get
+                {
+                    return _data;
+                }
+            }
+
+            public void MoveTime(float offset)
+            {
+                _time += offset;
+            }
+
+            [JsonProperty]
+            protected float _time;
+
+            [JsonProperty]
+            protected string _type;
+
+            [JsonProperty]
+            [JsonConverter(typeof(CustomDataConverter))]
+            protected dynamic _data;
+        }
 
         [Serializable]
         public class NoteData : BeatmapSaveData.ITime
@@ -214,7 +296,7 @@ namespace CustomJSONData.CustomBeatmap
 
             [JsonProperty]
             [JsonConverter(typeof(CustomDataConverter))]
-            public dynamic customData;
+            public dynamic _customData;
 
             public static implicit operator BeatmapSaveData.NoteData(NoteData nd)
             {
@@ -302,7 +384,7 @@ namespace CustomJSONData.CustomBeatmap
 
             [JsonProperty]
             [JsonConverter(typeof(CustomDataConverter))]
-            public dynamic customData;
+            public dynamic _customData;
  
             public static implicit operator BeatmapSaveData.ObstacleData(ObstacleData od)
             {
@@ -315,20 +397,7 @@ namespace CustomJSONData.CustomBeatmap
             }
         }
 
-        [Serializable]
-        public class RGBColor
-        {
-            // Scale is 0-1
-            [JsonProperty]
-            public float r;
-
-            [JsonProperty]
-            public float g;
-
-            [JsonProperty]
-            public float b;
-        }
-
+        /*
         /// <summary>
         /// Used to deserialize vanilla Beat Saber lighting events, as Newtonsoft.JSON doesn't get them right on its own
         /// </summary>
@@ -352,5 +421,6 @@ namespace CustomJSONData.CustomBeatmap
                 throw new NotImplementedException();
             }
         }
+        */
     }
 }

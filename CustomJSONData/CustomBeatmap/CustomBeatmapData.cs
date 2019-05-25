@@ -8,22 +8,22 @@ namespace CustomJSONData.CustomBeatmap
 {
     public class CustomBeatmapData : BeatmapData
     {
-        public CustomBeatmapData(BeatmapLineData[] beatmapLinesData, BeatmapEventData[] beatmapEventData, dynamic customData,
-            List<string> warnings, List<string> suggestions, List<string> requirements,
-            CustomBeatmapSaveData.RGBColor leftColor, CustomBeatmapSaveData.RGBColor rightColor, int? noteJumpStartBeatOffset
-            ) : base(beatmapLinesData, beatmapEventData)
+        public CustomEventData[] customEventData { get; protected set; }
+
+        public CustomBeatmapData(BeatmapLineData[] beatmapLinesData, BeatmapEventData[] beatmapEventData, CustomEventData[] customEventData) : base(beatmapLinesData, beatmapEventData)
         {
-            this.customData = customData;
-            this.warnings = warnings;
-            this.suggestions = suggestions;
-            this.requirements = requirements;
-            this.leftColor = leftColor;
-            this.rightColor = rightColor;
-            this.noteJumpStartBeatOffset = noteJumpStartBeatOffset;
+            this.customEventData = customEventData;
         }
-        public dynamic customData;
-        public List<string> warnings, suggestions, requirements;
-        public CustomBeatmapSaveData.RGBColor leftColor, rightColor;
-        public int? noteJumpStartBeatOffset;
+
+        public override BeatmapData GetCopy()
+        {
+            BeatmapData baseCopy = base.GetCopy();
+            CustomEventData[] copiedEvents = new CustomEventData[customEventData.Length];
+            for (int i = 0; i < customEventData.Length; i++)
+            {
+                copiedEvents[i] = customEventData[i].GetCopy();
+            }
+            return new CustomBeatmapData(baseCopy.beatmapLinesData, baseCopy.beatmapEventData, copiedEvents);
+        }
     }
 }
