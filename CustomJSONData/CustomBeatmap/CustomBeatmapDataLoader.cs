@@ -30,7 +30,7 @@ namespace CustomJSONData.CustomBeatmap
         }
 
         // Token: 0x0600125F RID: 4703 RVA: 0x000404A0 File Offset: 0x0003E6A0
-        public static CustomBeatmapData GetBeatmapDataFromBeatmapSaveData(List<CustomBeatmapSaveData.NoteData> notesSaveData, List<CustomBeatmapSaveData.ObstacleData> obstaclesSaveData, List<CustomBeatmapSaveData.EventData> eventsSaveData, float beatsPerMinute, float  shuffle, float shufflePeriod, List<CustomBeatmapSaveData.CustomEventData> customEventsSaveData)
+        public static CustomBeatmapData GetBeatmapDataFromBeatmapSaveData(List<CustomBeatmapSaveData.NoteData> notesSaveData, List<CustomBeatmapSaveData.ObstacleData> obstaclesSaveData, List<CustomBeatmapSaveData.EventData> eventsSaveData, float beatsPerMinute, float shuffle, float shufflePeriod, List<CustomBeatmapSaveData.CustomEventData> customEventsSaveData, dynamic customData, dynamic customLevelData)
         {
             try
             {
@@ -139,9 +139,11 @@ namespace CustomJSONData.CustomBeatmap
                     array2[j] = new BeatmapLineData();
                     array2[j].beatmapObjectsData = array[j].ToArray();
                 }
-                return new CustomBeatmapData(array2, list.ToArray(), customEvents.ToArray());
+                return new CustomBeatmapData(array2, list.ToArray(), customEvents.ToArray(), customData, customLevelData);
             } catch (Exception e)
             {
+                Plugin.logger.Critical("Exception loading CustomBeatmap!");
+                Plugin.logger.Critical(e);
                 Debug.LogError("Exception loading CustomBeatmap!");
                 Debug.LogError(e);
                 throw e;

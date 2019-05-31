@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using CustomJSONData.CustomLevelInfo;
+using static CustomJSONData.Trees;
 
 namespace CustomJSONData.HarmonyExtensions
 {
@@ -26,8 +28,9 @@ namespace CustomJSONData.HarmonyExtensions
             CustomBeatmapSaveData saveData = CustomBeatmapSaveData.DeserializeFromJSONString(json);
             if (saveData == null) return true;
 
-            __result = CustomBeatmapDataLoader.GetBeatmapDataFromBeatmapSaveData(saveData.notes, saveData.obstacles, saveData.events, beatsPerMinute, shuffle, shufflePeriod, saveData.customEvents ?? new List<CustomBeatmapSaveData.CustomEventData>());
+            __result = CustomBeatmapDataLoader.GetBeatmapDataFromBeatmapSaveData(saveData.notes, saveData.obstacles, saveData.events, beatsPerMinute, shuffle, shufflePeriod, saveData.customEvents ?? new List<CustomBeatmapSaveData.CustomEventData>(), Tree(), Tree());
             if (!(__result is CustomBeatmapData)) return true;
+
             CustomBeatmapData beatmapData = __result as CustomBeatmapData;
             return false;
         }

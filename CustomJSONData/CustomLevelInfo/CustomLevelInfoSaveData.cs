@@ -20,14 +20,18 @@ namespace CustomJSONData.CustomLevelInfo
                 return _customData;
             }
         }
-        public CustomLevelInfoSaveData(string songName, string songSubName, string songAuthorName, string levelAuthorName, float beatsPerMinute, float songTimeOffset, float shuffle, float shufflePeriod, float previewStartTime, float previewDuration, string songFilename, string coverImageFilename, string environmentName, DifficultyBeatmapSet[] difficultyBeatmapSets, dynamic customData) : base(songName, songSubName, songAuthorName, levelAuthorName, beatsPerMinute, songTimeOffset, shuffle, shufflePeriod, previewStartTime, previewDuration, songFilename, coverImageFilename, environmentName, difficultyBeatmapSets)
+        public Dictionary<string, dynamic> beatmapCustomDatasByFilename { get; protected set; }
+
+        public CustomLevelInfoSaveData(string songName, string songSubName, string songAuthorName, string levelAuthorName, float beatsPerMinute, float songTimeOffset, float shuffle, float shufflePeriod, float previewStartTime, float previewDuration, string songFilename, string coverImageFilename, string environmentName, DifficultyBeatmapSet[] difficultyBeatmapSets, dynamic customData, Dictionary<string, dynamic> beatmapCustomDatasByFilename) : base(songName, songSubName, songAuthorName, levelAuthorName, beatsPerMinute, songTimeOffset, shuffle, shufflePeriod, previewStartTime, previewDuration, songFilename, coverImageFilename, environmentName, difficultyBeatmapSets)
         {
             _customData = customData;
+            this.beatmapCustomDatasByFilename = beatmapCustomDatasByFilename;
         }
         public static StandardLevelInfoSaveData DeserializeFromJSONString(string stringData, StandardLevelInfoSaveData standardSaveData)
         {
             // StandardLevelInfoSaveData standardSaveData = StandardLevelInfoSaveData.DeserializeFromJSONString(stringData);
             if (standardSaveData.version != "2.0.0") return standardSaveData;
+            Dictionary<string, dynamic> beatmapsByFilename = new Dictionary<string, dynamic>();
             OopsAllCustomDatas customDatas = JsonConvert.DeserializeObject<OopsAllCustomDatas>(stringData, new CustomDataConverter());
             DifficultyBeatmapSet[] customBeatmapSets = new DifficultyBeatmapSet[standardSaveData.difficultyBeatmapSets.Length];
             for (int i = 0; i < standardSaveData.difficultyBeatmapSets.Length; i++)
@@ -39,10 +43,11 @@ namespace CustomJSONData.CustomLevelInfo
                     var standardBeatmap = standardBeatmapSet.difficultyBeatmaps[j];
                     DifficultyBeatmap customBeatmap = new DifficultyBeatmap(standardBeatmap.difficulty, standardBeatmap.difficultyRank, standardBeatmap.beatmapFilename, standardBeatmap.noteJumpMovementSpeed, standardBeatmap.noteJumpStartBeatOffset, customDatas._difficultyBeatmapSets[i]._difficultyBeatmaps[j]._customData ?? Tree());
                     customBeatmaps[j] = customBeatmap;
+                    beatmapsByFilename[customBeatmap.beatmapFilename] = customBeatmap.customData;
                 }
                 customBeatmapSets[i] = new DifficultyBeatmapSet(standardBeatmapSet.beatmapCharacteristicName, customBeatmaps);
             }
-            CustomLevelInfoSaveData result = new CustomLevelInfoSaveData(standardSaveData.songName, standardSaveData.songSubName, standardSaveData.songAuthorName, standardSaveData.levelAuthorName, standardSaveData.beatsPerMinute, standardSaveData.songTimeOffset, standardSaveData.shuffle, standardSaveData.shufflePeriod, standardSaveData.previewStartTime, standardSaveData.previewDuration, standardSaveData.songFilename, standardSaveData.coverImageFilename, standardSaveData.environmentName, customBeatmapSets, customDatas._customData ?? Tree());
+            CustomLevelInfoSaveData result = new CustomLevelInfoSaveData(standardSaveData.songName, standardSaveData.songSubName, standardSaveData.songAuthorName, standardSaveData.levelAuthorName, standardSaveData.beatsPerMinute, standardSaveData.songTimeOffset, standardSaveData.shuffle, standardSaveData.shufflePeriod, standardSaveData.previewStartTime, standardSaveData.previewDuration, standardSaveData.songFilename, standardSaveData.coverImageFilename, standardSaveData.environmentName, customBeatmapSets, customDatas._customData ?? Tree(), beatmapsByFilename);
             return result;
         }
 
@@ -56,6 +61,13 @@ namespace CustomJSONData.CustomLevelInfo
                     return _customData;
                 }
             }
+            // CustomDifficultyBeatmap:
+            // patch difficultyRank, noteJumpMovementSpeed, or noteJumpStartBeatOffset get accessor;
+            // save instance to array (to avoid race conditions);
+            // triangulate in CustomDifficultyBeatmap constructor by parentLevel and filename;
+            // associate by adding field to CustomBeatmapData (or actually just move the tree itself there)
+
+            // and/or patch LoadBeatmapDataBeatmapData
             public DifficultyBeatmap(string difficultyName, int difficultyRank, string beatmapFilename, float noteJumpMovementSpeed, int noteJumpStartBeatOffset, dynamic customData) : base(difficultyName, difficultyRank, beatmapFilename, noteJumpMovementSpeed, noteJumpStartBeatOffset)
             {
                 _customData = customData;

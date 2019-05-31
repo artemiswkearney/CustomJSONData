@@ -49,7 +49,7 @@ namespace CustomJSONData
             dynamic result = Tree();
             foreach(var p in t)
             {
-                result[p.Key] = p.Value is TreeType ? copy(p.Value as TreeType) : p.Value;
+                (result as TreeDict)[p.Key] = p.Value is TreeType ? copy(p.Value as TreeType) : p.Value;
             }
             return result;
         }
