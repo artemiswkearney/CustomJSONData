@@ -61,13 +61,6 @@ namespace CustomJSONData.CustomLevelInfo
                     return _customData;
                 }
             }
-            // CustomDifficultyBeatmap:
-            // patch difficultyRank, noteJumpMovementSpeed, or noteJumpStartBeatOffset get accessor;
-            // save instance to array (to avoid race conditions);
-            // triangulate in CustomDifficultyBeatmap constructor by parentLevel and filename;
-            // associate by adding field to CustomBeatmapData (or actually just move the tree itself there)
-
-            // and/or patch LoadBeatmapDataBeatmapData
             public DifficultyBeatmap(string difficultyName, int difficultyRank, string beatmapFilename, float noteJumpMovementSpeed, int noteJumpStartBeatOffset, dynamic customData) : base(difficultyName, difficultyRank, beatmapFilename, noteJumpMovementSpeed, noteJumpStartBeatOffset)
             {
                 _customData = customData;
