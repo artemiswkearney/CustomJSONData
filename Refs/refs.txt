@@ -1,0 +1,16 @@
+::from ./bsinstalldir.txt
+"Beat Saber_Data/
+""Managed/
+"""Assembly-CSharp.dll?virt
+"""Microsoft.CSharp.dll
+"""IPA.Loader
+"""".dll
+"""".xml
+"""UnityEngine.
+""""dll
+""""CoreModule.
+"""""dll
+"""""xml
+"Libs/
+""0Harmony.1.2.0.1.dll
+""Newtonsoft.Json.12.0.0.0.dll

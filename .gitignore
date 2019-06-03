@@ -261,4 +261,5 @@ __pycache__/
 *.pyc
 
 # BSBuildTools
-Refs/
+Refs/*.dll
+Refs/*.xml

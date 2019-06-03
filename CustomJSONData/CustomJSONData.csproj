@@ -92,7 +92,6 @@
     <Compile Include="CustomLevelInfo\CustomLevelInfoSaveData.cs" />
     <Compile Include="HarmonyPatches\BeatmapDataLoaderGetBeatmapDataFromJson.cs" />
     <Compile Include="HarmonyPatches\CustomLevelLoaderSOLoadBeatmapDataBeatmapData.cs" />
-    <Compile Include="HarmonyPatches\StandardLevelDetailViewSetContent.cs" />
     <Compile Include="HarmonyPatches\StandardLevelInfoSaveDataDeserializeFromJSONString.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
