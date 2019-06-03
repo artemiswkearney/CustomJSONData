@@ -31,7 +31,7 @@ namespace CustomJSONData
         /// <returns>A new Tree containing the provided members.</returns>
         public static dynamic Tree(List<KeyValuePair<string, object>> contents)
         {
-            dynamic t = Tree();
+            TreeDict t = (TreeDict)Tree();
             foreach(var p in contents)
             {
                 t[p.Key] = p.Value;
@@ -61,10 +61,27 @@ namespace CustomJSONData
         /// <returns>A copy of <paramref name="t"/>.</returns>
         public static dynamic shallowCopy(TreeType t) => Tree(t.ToList());
 
+        /// <summary>
+        /// Safely accesses a member of a tree, returning null if the member does not exist or if <paramref name="tree"/> is null.
+        /// </summary>
+        /// <param name="tree">The tree to access a member of</param>
+        /// <param name="memberName">The name of the member to be accessed</param>
+        /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or null if tree is null or no such member exists</returns>
         public static dynamic at(this TreeDict tree, string memberName)
         {
+            if (tree == null) return null;
             tree.TryGetValue(memberName, out object result);
             return result;
+        }
+
+        /// <summary>
+        /// Evaluates <paramref name="func"/> and returns its result. If <paramref name="func"/> throws an exception, returns null instead.
+        /// </summary>
+        /// <param name="func">The function to be evaluated.</param>
+        /// <returns></returns>
+        public static dynamic tryNull(Func<dynamic> func)
+        {
+            try { return func(); } catch { return null; }
         }
 
         /// <summary>
