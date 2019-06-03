@@ -36,7 +36,6 @@ namespace CustomJSONData.HarmonyPatches
                     __result = CustomBeatmapDataLoader.GetBeatmapDataFromBeatmapSaveData(bsd.notes, bsd.obstacles, bsd.events, standardLevelInfoSaveData.beatsPerMinute, standardLevelInfoSaveData.shuffle, standardLevelInfoSaveData.shufflePeriod, bsd.customEvents ?? new List<CustomBeatmapSaveData.CustomEventData>(), Tree(), Tree());
                 }
             }
-            __result = null;
             return false;
         }
     }

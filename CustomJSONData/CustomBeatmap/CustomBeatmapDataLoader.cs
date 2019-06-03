@@ -78,7 +78,7 @@ namespace CustomJSONData.CustomBeatmap
                         num2 = list2[0].time;
                         list2.Clear();
                     }
-                    CustomNoteData noteData3 = new CustomNoteData(num++, realTimeFromBPMTime, lineIndex, lineLayer, startNoteLineLayer, type, cutDirection, float.MaxValue, realTimeFromBPMTime - num2, customEventsSaveData);
+                    CustomNoteData noteData3 = new CustomNoteData(num++, realTimeFromBPMTime, lineIndex, lineLayer, startNoteLineLayer, type, cutDirection, float.MaxValue, realTimeFromBPMTime - num2, noteData2._customData ?? Tree());
                     int number = lineIndex;
                     if (number < 0)
                         number = 0;
@@ -99,7 +99,7 @@ namespace CustomJSONData.CustomBeatmap
                     ObstacleType type2 = obstacleData.type;
                     float realTimeFromBPMTime3 = GetRealTimeFromBPMTime(obstacleData.duration, beatsPerMinute, shuffle, shufflePeriod);
                     int width = obstacleData.width;
-                    CustomObstacleData item = new CustomObstacleData(num++, realTimeFromBPMTime2, lineIndex2, type2, realTimeFromBPMTime3, width, obstacleData._customData);
+                    CustomObstacleData item = new CustomObstacleData(num++, realTimeFromBPMTime2, lineIndex2, type2, realTimeFromBPMTime3, width, obstacleData._customData ?? Tree());
                     int number2 = lineIndex2;
                     if (number2 < 0)
                         number2 = 0;
@@ -112,13 +112,13 @@ namespace CustomJSONData.CustomBeatmap
                     float realTimeFromBPMTime4 = GetRealTimeFromBPMTime(eventData.time, beatsPerMinute, shuffle, shufflePeriod);
                     BeatmapEventType type3 = eventData.type;
                     int value = eventData.value;
-                    CustomBeatmapEventData item2 = new CustomBeatmapEventData(realTimeFromBPMTime4, type3, value, eventData.customData);
+                    CustomBeatmapEventData item2 = new CustomBeatmapEventData(realTimeFromBPMTime4, type3, value, eventData.customData ?? Tree());
                     list.Add(item2);
                 }
                 List<CustomEventData> customEvents = new List<CustomEventData>(customEventsSaveData.Count);
                 foreach (CustomBeatmapSaveData.CustomEventData customEventData in customEventsSaveData)
                 {
-                    customEvents.Add(new CustomEventData(GetRealTimeFromBPMTime(customEventData.time, beatsPerMinute, shuffle, shufflePeriod), customEventData.type, customEventData.data));
+                    customEvents.Add(new CustomEventData(GetRealTimeFromBPMTime(customEventData.time, beatsPerMinute, shuffle, shufflePeriod), customEventData.type, customEventData.data ?? Tree()));
                 }
                 if (list.Count == 0)
                 {
