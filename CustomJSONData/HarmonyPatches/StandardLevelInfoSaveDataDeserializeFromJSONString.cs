@@ -20,6 +20,7 @@ namespace CustomJSONData.HarmonyPatches
                 return;
             }
             __result = CustomLevelInfoSaveData.DeserializeFromJSONString(stringData, __result);
+            /*
             if (__result is CustomLevelInfoSaveData info)
             {
                 Plugin.logger.Info(info.songName + ":");
@@ -42,6 +43,7 @@ namespace CustomJSONData.HarmonyPatches
                     }
                 }
             }
+            */
         }
     }
 }
