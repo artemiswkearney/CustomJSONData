@@ -115,15 +115,19 @@ namespace CustomJSONData.CustomBeatmap
                     CustomBeatmapEventData item2 = new CustomBeatmapEventData(realTimeFromBPMTime4, type3, value, eventData.customData ?? Tree());
                     list.Add(item2);
                 }
+                if (list.Count == 0)
+                {
+                    list.Add(new CustomBeatmapEventData(0f, BeatmapEventType.Event0, 1, Tree()));
+                    list.Add(new CustomBeatmapEventData(0f, BeatmapEventType.Event4, 1, Tree()));
+                }
                 var customEvents = new Dictionary<string, List<CustomEventData>>(customEventsSaveData.Count);
                 foreach (CustomBeatmapSaveData.CustomEventData customEventData in customEventsSaveData)
                 {
                     customEvents[customEventData.type].Add(new CustomEventData(GetRealTimeFromBPMTime(customEventData.time, beatsPerMinute, shuffle, shufflePeriod), customEventData.type, customEventData.data ?? Tree()));
                 }
-                if (list.Count == 0)
+                foreach (var pair in customEvents)
                 {
-                    list.Add(new CustomBeatmapEventData(0f, BeatmapEventType.Event0, 1, Tree()));
-                    list.Add(new CustomBeatmapEventData(0f, BeatmapEventType.Event4, 1, Tree()));
+                    pair.Value.Sort((x, y) => x.time.CompareTo(y.time));
                 }
                 BeatmapLineData[] array2 = new BeatmapLineData[4];
                 for (int j = 0; j < 4; j++)
