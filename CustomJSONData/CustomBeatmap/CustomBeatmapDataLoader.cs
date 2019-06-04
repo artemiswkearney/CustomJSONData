@@ -115,10 +115,10 @@ namespace CustomJSONData.CustomBeatmap
                     CustomBeatmapEventData item2 = new CustomBeatmapEventData(realTimeFromBPMTime4, type3, value, eventData.customData ?? Tree());
                     list.Add(item2);
                 }
-                List<CustomEventData> customEvents = new List<CustomEventData>(customEventsSaveData.Count);
+                var customEvents = new Dictionary<string, List<CustomEventData>>(customEventsSaveData.Count);
                 foreach (CustomBeatmapSaveData.CustomEventData customEventData in customEventsSaveData)
                 {
-                    customEvents.Add(new CustomEventData(GetRealTimeFromBPMTime(customEventData.time, beatsPerMinute, shuffle, shufflePeriod), customEventData.type, customEventData.data ?? Tree()));
+                    customEvents[customEventData.type].Add(new CustomEventData(GetRealTimeFromBPMTime(customEventData.time, beatsPerMinute, shuffle, shufflePeriod), customEventData.type, customEventData.data ?? Tree()));
                 }
                 if (list.Count == 0)
                 {
@@ -139,7 +139,7 @@ namespace CustomJSONData.CustomBeatmap
                     array2[j] = new BeatmapLineData();
                     array2[j].beatmapObjectsData = array[j].ToArray();
                 }
-                return new CustomBeatmapData(array2, list.ToArray(), customEvents.ToArray(), customData, customLevelData);
+                return new CustomBeatmapData(array2, list.ToArray(), customEvents, customData, customLevelData);
             } catch (Exception e)
             {
                 Plugin.logger.Critical("Exception loading CustomBeatmap!");
