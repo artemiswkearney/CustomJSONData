@@ -10,13 +10,13 @@ namespace CustomJSONData.CustomBeatmap
     public class CustomBeatmapData : BeatmapData
     {
         public CustomEventData[] customEventData { get; protected set; }
-        public dynamic customData { get; protected set; }
+        public dynamic beatmapCustomData { get; protected set; }
         public dynamic levelCustomData { get; protected set; }
 
         public CustomBeatmapData(BeatmapLineData[] beatmapLinesData, BeatmapEventData[] beatmapEventData, CustomEventData[] customEventData, dynamic customData, dynamic levelCustomData) : base(beatmapLinesData, beatmapEventData)
         {
             this.customEventData = customEventData;
-            this.customData = customData;
+            this.beatmapCustomData = customData;
             this.levelCustomData = levelCustomData;
         }
 
@@ -28,7 +28,7 @@ namespace CustomJSONData.CustomBeatmap
             {
                 copiedEvents[i] = customEventData[i].GetCopy();
             }
-            return new CustomBeatmapData(baseCopy.beatmapLinesData, baseCopy.beatmapEventData, copiedEvents, copy(customData), copy(levelCustomData));
+            return new CustomBeatmapData(baseCopy.beatmapLinesData, baseCopy.beatmapEventData, copiedEvents, copy(beatmapCustomData), copy(levelCustomData));
         }
     }
 }

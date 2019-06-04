@@ -10,11 +10,11 @@ namespace CustomJSONData.Utils
 {
     public static class Extensions
     {
-        public static dynamic getCustomData(this IDifficultyBeatmap difficultyBeatmap)
+        public static dynamic getBeatmapCustomData(this IDifficultyBeatmap difficultyBeatmap)
         {
             if (difficultyBeatmap is CustomDifficultyBeatmap cd)
                 if (cd.beatmapData is CustomBeatmapData cb)
-                    return cb.customData;
+                    return cb.beatmapCustomData;
             return null;
         }
         public static dynamic getLevelCustomData(this IDifficultyBeatmap difficultyBeatmap)
