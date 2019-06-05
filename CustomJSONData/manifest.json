@@ -3,10 +3,9 @@
     "author": "Arti",
     "description": "Adds support for loading of and access to arbitrary data on beatmap difficulties, notes, lighting events, and obstacles",
     "gameVersion": "1.0.0",
-    "dependsOn": [
-        "BSIPA",
-        "^3.12.20"
-    ],
+    "dependsOn": {
+        "BSIPA":"^3.12.19"
+    },
     "id": "CustomJSONData",
     "name": "CustomJSONData",
     "version": "0.0.1",
