@@ -123,6 +123,7 @@ namespace CustomJSONData.CustomBeatmap
                 var customEvents = new Dictionary<string, List<CustomEventData>>(customEventsSaveData.Count);
                 foreach (CustomBeatmapSaveData.CustomEventData customEventData in customEventsSaveData)
                 {
+                    if (!customEvents.ContainsKey(customEventData.type)) customEvents[customEventData.type] = new List<CustomEventData>();
                     customEvents[customEventData.type].Add(new CustomEventData(GetRealTimeFromBPMTime(customEventData.time, beatsPerMinute, shuffle, shufflePeriod), customEventData.type, customEventData.data ?? Tree()));
                 }
                 foreach (var pair in customEvents)

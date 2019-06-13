@@ -2,7 +2,7 @@
     "$schema": "https://raw.githubusercontent.com/beat-saber-modding-group/BSIPA-MetadataFileSchema/master/Schema.json",
     "author": "Arti",
     "description": "Adds support for loading of and access to arbitrary data on beatmap difficulties, notes, lighting events, and obstacles",
-    "gameVersion": "1.0.0",
+    "gameVersion": "1.1.0",
     "dependsOn": {
         "BSIPA":"^3.12.19"
     },

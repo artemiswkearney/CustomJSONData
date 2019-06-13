@@ -67,11 +67,100 @@ namespace CustomJSONData
         /// <param name="tree">The tree to access a member of</param>
         /// <param name="memberName">The name of the member to be accessed</param>
         /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or null if tree is null or no such member exists</returns>
-        public static dynamic at(this TreeDict tree, string memberName)
+        public static dynamic at(TreeDict tree, string memberName)
         {
             if (tree == null) return null;
             tree.TryGetValue(memberName, out object result);
             return result;
+        }
+
+        /// <summary>
+        /// Safely accesses a member of a tree, returning <paramref name="defaultValue"/> if the member does not exist or if <paramref name="tree"/> is null.
+        /// If <typeparamref name="T"/> is a value type and you want <paramref name="defaultValue"/> to be null, use <see cref="getNullable{T}(TreeDict, string, T?)"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the member to be returned</typeparam>
+        /// <param name="tree">The tree to access a member of</param>
+        /// <param name="memberName">The name of the member to be accessed</param>
+        /// <param name="defaultValue">The value to be returned if <paramref name="tree"/> is null or has no member <paramref name="memberName"/></param>
+        /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
+        public static T get<T>(TreeDict tree, string memberName, T defaultValue = default(T))
+        {
+            if (tree == null) return defaultValue;
+            dynamic result = defaultValue;
+            tree.TryGetValue(memberName, out result);
+            try
+            {
+                return (T)result;
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+        /// <summary>
+        /// Safely accesses a member of a tree, returning <paramref name="defaultValue"/> if the member does not exist or if <paramref name="tree"/> is null.
+        /// Use <see cref="get{T}(TreeDict, string, T)"/> unless <typeparamref name="T"/> is a value type and you want a <see cref="Nullable{T}"/> as a result.
+        /// </summary>
+        /// <typeparam name="T">The type of the member to be returned</typeparam>
+        /// <param name="tree">The tree to access a member of</param>
+        /// <param name="memberName">The name of the member to be accessed</param>
+        /// <param name="defaultValue">The value to be returned if <paramref name="tree"/> is null or has no member <paramref name="memberName"/></param>
+        /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
+        public static T? getNullable<T>(TreeDict tree, string memberName, T? defaultValue = null) where T : struct
+        {
+            if (tree == null) return defaultValue;
+            dynamic result = defaultValue;
+            tree.TryGetValue(memberName, out result);
+            try
+            {
+                return (T?)(T)result ?? defaultValue;
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+        /// <summary>
+        /// Safely accesses a member of a tree, returning <paramref name="defaultValue"/> if the member does not exist or if <paramref name="tree"/> is null.
+        /// If <typeparamref name="T"/> is a value type and you want <paramref name="defaultValue"/> to be null, use <see cref="getNullable{T}(object, string, T?)"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the member to be returned</typeparam>
+        /// <param name="tree">The tree to access a member of</param>
+        /// <param name="memberName">The name of the member to be accessed</param>
+        /// <param name="defaultValue">The value to be returned if <paramref name="tree"/> is null or has no member <paramref name="memberName"/></param>
+        /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
+        public static T get<T>(object tree, string memberName, T defaultValue = default(T))
+        {
+            try
+            {
+                if ((TreeDict)tree == null) return defaultValue;
+                return get((TreeDict)tree, memberName, defaultValue);
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+        /// <summary>
+        /// Safely accesses a member of a tree, returning <paramref name="defaultValue"/> if the member does not exist or if <paramref name="tree"/> is null.
+        /// Use <see cref="get{T}(object, string, T)"/> unless <typeparamref name="T"/> is a value type and you want a <see cref="Nullable{T}"/> as a result.
+        /// </summary>
+        /// <typeparam name="T">The type of the member to be returned</typeparam>
+        /// <param name="tree">The tree to access a member of</param>
+        /// <param name="memberName">The name of the member to be accessed</param>
+        /// <param name="defaultValue">The value to be returned if <paramref name="tree"/> is null or has no member <paramref name="memberName"/></param>
+        /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
+        public static T? getNullable<T>(object tree, string memberName, T? defaultValue = null) where T : struct
+        {
+            try
+            {
+                if ((TreeDict)tree == null) return defaultValue;
+                return getNullable((TreeDict)tree, memberName, defaultValue);
+            }
+            catch
+            {
+                return defaultValue;
+            }
         }
 
         /// <summary>

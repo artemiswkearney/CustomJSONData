@@ -29,7 +29,7 @@ namespace CustomJSONData.HarmonyPatches
                 else if (standardLevelInfoSaveData is CustomLevelInfoSaveData lisd)
                 {
 
-                    __result = CustomBeatmapDataLoader.GetBeatmapDataFromBeatmapSaveData(bsd.notes, bsd.obstacles, bsd.events, lisd.beatsPerMinute, lisd.shuffle, lisd.shufflePeriod, bsd.customEvents ?? new List<CustomBeatmapSaveData.CustomEventData>(), lisd.beatmapCustomDatasByFilename.at(difficultyFileName) ?? Tree(), lisd.customData ?? Tree());
+                    __result = CustomBeatmapDataLoader.GetBeatmapDataFromBeatmapSaveData(bsd.notes, bsd.obstacles, bsd.events, lisd.beatsPerMinute, lisd.shuffle, lisd.shufflePeriod, bsd.customEvents ?? new List<CustomBeatmapSaveData.CustomEventData>(), at(lisd.beatmapCustomDatasByFilename, difficultyFileName) ?? Tree(), lisd.customData ?? Tree());
                 }
                 else
                 {
