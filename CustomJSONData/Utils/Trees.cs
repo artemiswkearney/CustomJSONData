@@ -186,7 +186,8 @@ namespace CustomJSONData
         /// </summary>
         /// <param name="highPriority">The Tree to keep the members of in case of conflict</param>
         /// <param name="lowPriority">The Tree to drop the members of in case of conflict</param>
-        /// <param name="copySubtrees">If true, all Trees encountered as members in only one of highPriority and lowPriority will be copied as with copy(Tree) rather than copied by reference. Increases performance cost by the cost of those copies.</param>
+        /// <param name="copySubtrees">If true, all Trees encountered as members in only one of highPriority and lowPriority will be copied as with copy(Tree) rather than copied by reference. 
+        /// Increases performance cost by the cost of those copies.</param>
         /// <returns>A tree consisting of highPriority and lowPriority merged</returns>
         public static dynamic mergeTrees(TreeType highPriority, TreeType lowPriority, bool copySubtrees = true)
         {
@@ -266,7 +267,8 @@ namespace CustomJSONData
         }
 
         /// <summary>
-        /// Checks whether an object is a valid Tree. (Valid Trees are all of the same underlying type, and do not contain themselves directly or indirectly.) This involves recursively validating all subtrees; if performance is critical, consider whether <see cref="isTreeType(object)"/> suits your needs better.
+        /// Checks whether an object is a valid Tree. (Valid Trees are all of the same underlying type, and do not contain themselves directly or indirectly.) This involves recursively validating 
+        /// all subtrees; if performance is critical, consider whether <see cref="isTreeType(object)"/> suits your needs better.
         /// </summary>
         /// <param name="o">The object to validate.</param>
         /// <returns>Whether <paramref name="o"/> meets all the criteria to be a Tree.</returns>
