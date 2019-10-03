@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using TreeType = System.Dynamic.ExpandoObject;
 using TreeDict = System.Collections.Generic.IDictionary<string, object>;
+using System.Runtime.CompilerServices;
 
 namespace CustomJSONData
 {
@@ -47,7 +48,7 @@ namespace CustomJSONData
         /// </summary>
         /// <param name="t">The tree to copy.</param>
         /// <returns>A copy of t.</returns>
-        public static dynamic copy(this TreeType t)
+        public static dynamic copy(TreeType t)
         {
             dynamic result = Tree();
             foreach(var p in t)
@@ -58,11 +59,25 @@ namespace CustomJSONData
         }
 
         /// <summary>
+        /// The extension method form of <see cref="copy(TreeType)"/>
+        /// </summary>
+        /// <seealso cref="copy(TreeType)"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static dynamic Copy(this TreeType t) => copy(t);
+
+        /// <summary>
         /// Makes a shallow copy of a tree - all members of reference types, including sub-Trees, will refer to the same objects as in <paramref name="t"/>.
         /// </summary>
         /// <param name="t">The tree to copy.</param>
         /// <returns>A copy of <paramref name="t"/>.</returns>
-        public static dynamic shallowCopy(this TreeType t) => Tree(t.ToList());
+        public static dynamic shallowCopy(TreeType t) => Tree(t.ToList());
+
+        /// <summary>
+        /// The extension method form of <see cref="shallowCopy(TreeType)"/>
+        /// </summary>
+        /// <seealso cref="shallowCopy(TreeType)"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static dynamic ShallowCopy(this TreeType t) => shallowCopy(t);
 
         /// <summary>
         /// Safely accesses a member of a tree, returning null if the member does not exist or if <paramref name="tree"/> is null.
@@ -70,12 +85,19 @@ namespace CustomJSONData
         /// <param name="tree">The tree to access a member of</param>
         /// <param name="memberName">The name of the member to be accessed</param>
         /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or null if tree is null or no such member exists</returns>
-        public static dynamic at(this TreeDict tree, string memberName)
+        public static dynamic at(TreeDict tree, string memberName)
         {
             if (tree == null) return null;
             tree.TryGetValue(memberName, out object result);
             return result;
         }
+
+        /// <summary>
+        /// The extension method form of <see cref="at(TreeDict, string)"/>
+        /// </summary>
+        /// <seealso cref="at(TreeDict, string)" />
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static dynamic At(this TreeDict t, string m) => at(t, m);
 
         /// <summary>
         /// Safely accesses a member of a tree, returning <paramref name="defaultValue"/> if the member does not exist or if <paramref name="tree"/> is null.
@@ -86,7 +108,7 @@ namespace CustomJSONData
         /// <param name="memberName">The name of the member to be accessed</param>
         /// <param name="defaultValue">The value to be returned if <paramref name="tree"/> is null or has no member <paramref name="memberName"/></param>
         /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
-        public static T get<T>(this TreeDict tree, string memberName, T defaultValue = default)
+        public static T get<T>(TreeDict tree, string memberName, T defaultValue = default)
         {
             if (tree == null) return defaultValue;
             if (!tree.TryGetValue(memberName, out dynamic result))
@@ -100,6 +122,14 @@ namespace CustomJSONData
                 return defaultValue;
             }
         }
+
+        /// <summary>
+        /// The extension method form of <see cref="get{T}(TreeDict, string, T)"/>.
+        /// </summary>
+        /// <seealso cref="get{T}(TreeDict, string, T)"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Get<T>(this TreeDict t, string m, T d = default) => get(t, m, d);
+
         /// <summary>
         /// Safely accesses a member of a tree, returning <paramref name="defaultValue"/> if the member does not exist or if <paramref name="tree"/> is null.
         /// Use <see cref="get{T}(TreeDict, string, T)"/> unless <typeparamref name="T"/> is a value type and you want a <see cref="Nullable{T}"/> as a result.
@@ -109,7 +139,7 @@ namespace CustomJSONData
         /// <param name="memberName">The name of the member to be accessed</param>
         /// <param name="defaultValue">The value to be returned if <paramref name="tree"/> is null or has no member <paramref name="memberName"/></param>
         /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
-        public static T? getNullable<T>(this TreeDict tree, string memberName, T? defaultValue = null) where T : struct
+        public static T? getNullable<T>(TreeDict tree, string memberName, T? defaultValue = null) where T : struct
         {
             if (tree == null) return defaultValue;
             if (!tree.TryGetValue(memberName, out dynamic result))
@@ -123,6 +153,14 @@ namespace CustomJSONData
                 return defaultValue;
             }
         }
+
+        /// <summary>
+        /// The extension method form of <see cref="getNullable{T}(TreeDict, string, T?)"/>.
+        /// </summary>
+        /// <seealso cref="getNullable{T}(TreeDict, string, T?)"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T? GetNullable<T>(this TreeDict t, string m, T? d = default) where T : struct => getNullable(t, m, d);
+
         /// <summary>
         /// Safely accesses a member of a tree, returning <paramref name="defaultValue"/> if the member does not exist or if <paramref name="tree"/> is null.
         /// If <typeparamref name="T"/> is a value type and you want <paramref name="defaultValue"/> to be null, use <see cref="getNullable{T}(object, string, T?)"/>.
@@ -132,7 +170,7 @@ namespace CustomJSONData
         /// <param name="memberName">The name of the member to be accessed</param>
         /// <param name="defaultValue">The value to be returned if <paramref name="tree"/> is null or has no member <paramref name="memberName"/></param>
         /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
-        public static T get<T>(this object tree, string memberName, T defaultValue = default(T))
+        public static T get<T>(object tree, string memberName, T defaultValue = default)
         {
             try
             {
@@ -144,6 +182,14 @@ namespace CustomJSONData
                 return defaultValue;
             }
         }
+
+        /// <summary>
+        /// The extension method form of <see cref="get{T}(object, string, T)"/>.
+        /// </summary>
+        /// <seealso cref="get{T}(object, string, ?)"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Get<T>(object t, string m, T d = default) => get(t, m, d);
+
         /// <summary>
         /// Safely accesses a member of a tree, returning <paramref name="defaultValue"/> if the member does not exist or if <paramref name="tree"/> is null.
         /// Use <see cref="get{T}(object, string, T)"/> unless <typeparamref name="T"/> is a value type and you want a <see cref="Nullable{T}"/> as a result.
@@ -153,7 +199,7 @@ namespace CustomJSONData
         /// <param name="memberName">The name of the member to be accessed</param>
         /// <param name="defaultValue">The value to be returned if <paramref name="tree"/> is null or has no member <paramref name="memberName"/></param>
         /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
-        public static T? getNullable<T>(this object tree, string memberName, T? defaultValue = null) where T : struct
+        public static T? getNullable<T>(object tree, string memberName, T? defaultValue = null) where T : struct
         {
             try
             {
@@ -167,6 +213,13 @@ namespace CustomJSONData
         }
 
         /// <summary>
+        /// The extension method form of <see cref="getNullable{T}(object, string, T?)"/>.
+        /// </summary>
+        /// <seealso cref="getNullable{T}(object, string, T?)"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T? GetNullable<T>(object t, string m, T? d = default) where T : struct => getNullable(t, m, d);
+
+        /// <summary>
         /// Evaluates <paramref name="func"/> and returns its result. If <paramref name="func"/> throws an exception, returns null instead.
         /// </summary>
         /// <param name="func">The function to be evaluated.</param>
@@ -175,6 +228,14 @@ namespace CustomJSONData
         {
             try { return func(); } catch { return null; }
         }
+
+
+        /// <summary>
+        /// An alternate name for <see cref="tryNull(Func{dynamic})"/>
+        /// </summary>
+        /// <seealso cref="tryNull(Func{dynamic})"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static dynamic TryNull(Func<dynamic> func) => tryNull(func);
 
         /// <summary>
         /// Combines the contents of the two trees, recursively merging subtrees where appropriate.
@@ -216,7 +277,8 @@ namespace CustomJSONData
         /// An extension method form of <see cref="mergeTrees(TreeType, TreeType, bool)"/>.
         /// </summary>
         /// <seealso cref="mergeTrees(TreeType, TreeType, bool)"/>
-        public static dynamic merge(this TreeType highPriority, TreeType lowPriority, bool copySubtrees = true) => mergeTrees(highPriority, lowPriority, copySubtrees);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static dynamic Merge(this TreeType highPriority, TreeType lowPriority, bool copySubtrees = true) => mergeTrees(highPriority, lowPriority, copySubtrees);
 
         /// <summary>
         /// Maps an <see cref="Action{Tree}"/> over a tree and its subtrees.
@@ -224,7 +286,7 @@ namespace CustomJSONData
         /// </summary>
         /// <param name="tree">The tree to map over</param>
         /// <param name="action">The Action to map over the tree</param>
-        public static void map(this TreeType tree, Action<dynamic> action)
+        public static void map(TreeType tree, Action<dynamic> action)
         {
             action(tree);
             foreach (var pair in tree)
@@ -237,6 +299,13 @@ namespace CustomJSONData
         }
 
         /// <summary>
+        /// An extension method form of <see cref="map(TreeType, Action{dynamic})"/>.
+        /// </summary>
+        /// <seealso cref="map(TreeType, Action{dynamic})"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Map(this TreeType t, Action<dynamic> a) => map(t, a);
+
+        /// <summary>
         /// Maps a <see cref="Func{Tree, Tree}"/> over <paramref name="tree"/> and its subtrees, replacing those subtrees with the result of mapping <paramref name="func"/> over them.
         /// If <paramref name="doCopy"/> is true, the Trees <paramref name="func"/> is applied to will be <see cref="copy(TreeType)">copies</see> of <paramref name="tree"/> and its subtrees.
         /// </summary>
@@ -244,7 +313,7 @@ namespace CustomJSONData
         /// <param name="func">The transformation to apply to each subtree.</param>
         /// <param name="doCopy">Whether to copy the tree before transforming it.</param>
         /// <returns></returns>
-        public static dynamic map(this TreeType tree, Func<dynamic, dynamic> func, bool doCopy = true)
+        public static dynamic map(TreeType tree, Func<dynamic, dynamic> func, bool doCopy = true)
         {
             TreeType newTree = func(doCopy ? copy(tree) : tree);
             var treeKeys = new List<string>();
@@ -263,14 +332,28 @@ namespace CustomJSONData
         }
 
         /// <summary>
+        /// An extension method form of <see cref="map(TreeType, Func{dynamic, dynamic}, bool)"/>.
+        /// </summary>
+        /// <seealso cref="map(TreeType, Func{dynamic, dynamic}, bool)"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Map(this TreeType t, Func<dynamic, dynamic> f, bool c = true) => map(t, f, c);
+
+        /// <summary>
         /// Checks whether an object is of the right type to be a Tree. Does *not* validate whether the object is a *valid* Tree; use <see cref="isTree(object)"/> for this purpose.
         /// </summary>
         /// <param name="o">The object to typecheck.</param>
         /// <returns>Whether <paramref name="o"/> is of the right type to be a Tree.</returns>
-        public static bool isTreeType(this object o)
+        public static bool isTreeType(object o)
         {
             return o is TreeType;
         }
+
+        /// <summary>
+        /// An alternate name of <see cref="isTreeType(object)"/>.
+        /// </summary>
+        /// <seealso cref="isTreeType(object)"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsTreeType(object o) => isTreeType(o);
 
         /// <summary>
         /// Checks whether an object is a valid Tree. (Valid Trees are all of the same underlying type, and do not contain themselves directly or indirectly.) This involves recursively validating 
@@ -278,7 +361,7 @@ namespace CustomJSONData
         /// </summary>
         /// <param name="o">The object to validate.</param>
         /// <returns>Whether <paramref name="o"/> meets all the criteria to be a Tree.</returns>
-        public static bool isTree(this object o)
+        public static bool isTree(object o)
         {
             // Validates a member of a Tree (or a Tree itself) to make sure it doesn't contain itself or any of its parent Trees.
             // ACCUMULATOR: parents
@@ -300,5 +383,12 @@ namespace CustomJSONData
 
             return isTreeType(o) && isTreeInternal(o, new HashSet<object>());
         }
+
+        /// <summary>
+        /// An alternate name of <see cref="isTree(object)"/>.
+        /// </summary>
+        /// <seealso cref="isTree(object)"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsTree(object o) => isTree(o);
     }
 }
