@@ -47,7 +47,7 @@ namespace CustomJSONData
         /// </summary>
         /// <param name="t">The tree to copy.</param>
         /// <returns>A copy of t.</returns>
-        public static dynamic copy(TreeType t)
+        public static dynamic copy(this TreeType t)
         {
             dynamic result = Tree();
             foreach(var p in t)
@@ -62,7 +62,7 @@ namespace CustomJSONData
         /// </summary>
         /// <param name="t">The tree to copy.</param>
         /// <returns>A copy of <paramref name="t"/>.</returns>
-        public static dynamic shallowCopy(TreeType t) => Tree(t.ToList());
+        public static dynamic shallowCopy(this TreeType t) => Tree(t.ToList());
 
         /// <summary>
         /// Safely accesses a member of a tree, returning null if the member does not exist or if <paramref name="tree"/> is null.
@@ -70,7 +70,7 @@ namespace CustomJSONData
         /// <param name="tree">The tree to access a member of</param>
         /// <param name="memberName">The name of the member to be accessed</param>
         /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or null if tree is null or no such member exists</returns>
-        public static dynamic at(TreeDict tree, string memberName)
+        public static dynamic at(this TreeDict tree, string memberName)
         {
             if (tree == null) return null;
             tree.TryGetValue(memberName, out object result);
@@ -86,7 +86,7 @@ namespace CustomJSONData
         /// <param name="memberName">The name of the member to be accessed</param>
         /// <param name="defaultValue">The value to be returned if <paramref name="tree"/> is null or has no member <paramref name="memberName"/></param>
         /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
-        public static T get<T>(TreeDict tree, string memberName, T defaultValue = default)
+        public static T get<T>(this TreeDict tree, string memberName, T defaultValue = default)
         {
             if (tree == null) return defaultValue;
             if (!tree.TryGetValue(memberName, out dynamic result))
@@ -109,7 +109,7 @@ namespace CustomJSONData
         /// <param name="memberName">The name of the member to be accessed</param>
         /// <param name="defaultValue">The value to be returned if <paramref name="tree"/> is null or has no member <paramref name="memberName"/></param>
         /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
-        public static T? getNullable<T>(TreeDict tree, string memberName, T? defaultValue = null) where T : struct
+        public static T? getNullable<T>(this TreeDict tree, string memberName, T? defaultValue = null) where T : struct
         {
             if (tree == null) return defaultValue;
             if (!tree.TryGetValue(memberName, out dynamic result))
@@ -132,7 +132,7 @@ namespace CustomJSONData
         /// <param name="memberName">The name of the member to be accessed</param>
         /// <param name="defaultValue">The value to be returned if <paramref name="tree"/> is null or has no member <paramref name="memberName"/></param>
         /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
-        public static T get<T>(object tree, string memberName, T defaultValue = default(T))
+        public static T get<T>(this object tree, string memberName, T defaultValue = default(T))
         {
             try
             {
@@ -153,7 +153,7 @@ namespace CustomJSONData
         /// <param name="memberName">The name of the member to be accessed</param>
         /// <param name="defaultValue">The value to be returned if <paramref name="tree"/> is null or has no member <paramref name="memberName"/></param>
         /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
-        public static T? getNullable<T>(object tree, string memberName, T? defaultValue = null) where T : struct
+        public static T? getNullable<T>(this object tree, string memberName, T? defaultValue = null) where T : struct
         {
             try
             {
@@ -213,12 +213,18 @@ namespace CustomJSONData
         }
 
         /// <summary>
+        /// An extension method form of <see cref="mergeTrees(TreeType, TreeType, bool)"/>.
+        /// </summary>
+        /// <seealso cref="mergeTrees(TreeType, TreeType, bool)"/>
+        public static dynamic merge(this TreeType highPriority, TreeType lowPriority, bool copySubtrees = true) => mergeTrees(highPriority, lowPriority, copySubtrees);
+
+        /// <summary>
         /// Maps an <see cref="Action{Tree}"/> over a tree and its subtrees.
         /// <paramref name="action"/> will first be called on <paramref name="tree"/>, then on each subtree as it's encountered in a depth-first search.
         /// </summary>
         /// <param name="tree">The tree to map over</param>
         /// <param name="action">The Action to map over the tree</param>
-        public static void map(TreeType tree, Action<dynamic> action)
+        public static void map(this TreeType tree, Action<dynamic> action)
         {
             action(tree);
             foreach (var pair in tree)
@@ -238,7 +244,7 @@ namespace CustomJSONData
         /// <param name="func">The transformation to apply to each subtree.</param>
         /// <param name="doCopy">Whether to copy the tree before transforming it.</param>
         /// <returns></returns>
-        public static dynamic map(TreeType tree, Func<dynamic, dynamic> func, bool doCopy = true)
+        public static dynamic map(this TreeType tree, Func<dynamic, dynamic> func, bool doCopy = true)
         {
             TreeType newTree = func(doCopy ? copy(tree) : tree);
             var treeKeys = new List<string>();
@@ -261,7 +267,7 @@ namespace CustomJSONData
         /// </summary>
         /// <param name="o">The object to typecheck.</param>
         /// <returns>Whether <paramref name="o"/> is of the right type to be a Tree.</returns>
-        public static bool isTreeType(object o)
+        public static bool isTreeType(this object o)
         {
             return o is TreeType;
         }
@@ -272,7 +278,7 @@ namespace CustomJSONData
         /// </summary>
         /// <param name="o">The object to validate.</param>
         /// <returns>Whether <paramref name="o"/> meets all the criteria to be a Tree.</returns>
-        public static bool isTree(object o)
+        public static bool isTree(this object o)
         {
             // Validates a member of a Tree (or a Tree itself) to make sure it doesn't contain itself or any of its parent Trees.
             // ACCUMULATOR: parents
