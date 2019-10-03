@@ -30,7 +30,9 @@ namespace CustomJSONData.CustomBeatmap
         }
 
         // Token: 0x0600125F RID: 4703 RVA: 0x000404A0 File Offset: 0x0003E6A0
-        public static CustomBeatmapData GetBeatmapDataFromBeatmapSaveData(List<CustomBeatmapSaveData.NoteData> notesSaveData, List<CustomBeatmapSaveData.ObstacleData> obstaclesSaveData, List<CustomBeatmapSaveData.EventData> eventsSaveData, float beatsPerMinute, float shuffle, float shufflePeriod, List<CustomBeatmapSaveData.CustomEventData> customEventsSaveData, dynamic customData, dynamic customLevelData)
+        public static CustomBeatmapData GetBeatmapDataFromBeatmapSaveData(List<CustomBeatmapSaveData.NoteData> notesSaveData, List<CustomBeatmapSaveData.ObstacleData> obstaclesSaveData, 
+                                                                          List<CustomBeatmapSaveData.EventData> eventsSaveData, float beatsPerMinute, float shuffle, float shufflePeriod, 
+                                                                          List<CustomBeatmapSaveData.CustomEventData> customEventsSaveData, dynamic customData, dynamic customLevelData)
         {
             try
             {

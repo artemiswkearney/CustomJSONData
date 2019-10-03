@@ -263,3 +263,6 @@ __pycache__/
 # BSBuildTools
 Refs/*.dll
 Refs/*.xml
+
+# The user-defined BS install location
+bsinstalldir.txt

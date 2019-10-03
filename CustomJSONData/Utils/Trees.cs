@@ -14,7 +14,10 @@ namespace CustomJSONData
     /// - Implements all the features of the ExpandoObject class that would be visible to standard C# code (notably including implementation of<see cref="IDictionary{string, object}"/>).
     /// - No members of a Tree will be Trees with the original Tree as a member.
     /// - All Trees will be of the same underlying type; however, the actual type used is an implementation detail and should not be relied upon.
-    /// Note that calling many of the functions in this class on invalid Trees (those that contain themselves directly or indirectly) is undefined behavior, and may lead to infinite loops or stack overflows. To avoid inadvertently creating invalid Trees, we recommend never adding a subtree to a Tree that's not newly created, although validating defensively with <see cref="isTree(object)"/> is also an option.
+    /// 
+    /// Note that calling many of the functions in this class on invalid Trees (those that contain themselves directly or indirectly) is undefined behavior, and may lead to infinite loops 
+    /// or stack overflows. To avoid inadvertently creating invalid Trees, we recommend never adding a subtree to a Tree that's not newly created, although validating defensively with 
+    /// <see cref="isTree(object)"/> is also an option.
     /// </summary>
     public static class Trees
     {
@@ -83,11 +86,11 @@ namespace CustomJSONData
         /// <param name="memberName">The name of the member to be accessed</param>
         /// <param name="defaultValue">The value to be returned if <paramref name="tree"/> is null or has no member <paramref name="memberName"/></param>
         /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
-        public static T get<T>(TreeDict tree, string memberName, T defaultValue = default(T))
+        public static T get<T>(TreeDict tree, string memberName, T defaultValue = default)
         {
             if (tree == null) return defaultValue;
-            dynamic result = defaultValue;
-            tree.TryGetValue(memberName, out result);
+            if (!tree.TryGetValue(memberName, out dynamic result))
+                return defaultValue;
             try
             {
                 return (T)result;
@@ -109,8 +112,8 @@ namespace CustomJSONData
         public static T? getNullable<T>(TreeDict tree, string memberName, T? defaultValue = null) where T : struct
         {
             if (tree == null) return defaultValue;
-            dynamic result = defaultValue;
-            tree.TryGetValue(memberName, out result);
+            if (!tree.TryGetValue(memberName, out dynamic result))
+                return defaultValue;
             try
             {
                 return (T?)(T)result ?? defaultValue;
@@ -183,14 +186,15 @@ namespace CustomJSONData
         /// </summary>
         /// <param name="highPriority">The Tree to keep the members of in case of conflict</param>
         /// <param name="lowPriority">The Tree to drop the members of in case of conflict</param>
-        /// <param name="copySubtrees">If true, all Trees encountered as members in only one of highPriority and lowPriority will be copied as with copy(Tree) rather than copied by reference. Increases performance cost by the cost of those copies.</param>
+        /// <param name="copySubtrees">If true, all Trees encountered as members in only one of highPriority and lowPriority will be copied as with copy(Tree) rather than copied by reference. 
+        /// Increases performance cost by the cost of those copies.</param>
         /// <returns>A tree consisting of highPriority and lowPriority merged</returns>
         public static dynamic mergeTrees(TreeType highPriority, TreeType lowPriority, bool copySubtrees = true)
         {
             if (highPriority == null) return lowPriority;
             if (lowPriority == null) return highPriority;
             dynamic result = copySubtrees ? copy(lowPriority) : shallowCopy(lowPriority);
-            foreach(KeyValuePair<string, object> pair in (TreeDict)highPriority)
+            foreach(KeyValuePair<string, object> pair in highPriority)
             {
                 if (pair.Value is TreeType)
                 {
@@ -263,7 +267,8 @@ namespace CustomJSONData
         }
 
         /// <summary>
-        /// Checks whether an object is a valid Tree. (Valid Trees are all of the same underlying type, and do not contain themselves directly or indirectly.) This involves recursively validating all subtrees; if performance is critical, consider whether <see cref="isTreeType(object)"/> suits your needs better.
+        /// Checks whether an object is a valid Tree. (Valid Trees are all of the same underlying type, and do not contain themselves directly or indirectly.) This involves recursively validating 
+        /// all subtrees; if performance is critical, consider whether <see cref="isTreeType(object)"/> suits your needs better.
         /// </summary>
         /// <param name="o">The object to validate.</param>
         /// <returns>Whether <paramref name="o"/> meets all the criteria to be a Tree.</returns>

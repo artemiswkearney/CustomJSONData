@@ -13,7 +13,8 @@ namespace CustomJSONData.CustomBeatmap
         public dynamic beatmapCustomData { get; protected set; }
         public dynamic levelCustomData { get; protected set; }
 
-        public CustomBeatmapData(BeatmapLineData[] beatmapLinesData, BeatmapEventData[] beatmapEventData, Dictionary<string, List<CustomEventData>> customEventData, dynamic customData, dynamic levelCustomData) : base(beatmapLinesData, beatmapEventData)
+        public CustomBeatmapData(BeatmapLineData[] beatmapLinesData, BeatmapEventData[] beatmapEventData, Dictionary<string, List<CustomEventData>> customEventData, dynamic customData, dynamic levelCustomData) 
+                          : base(beatmapLinesData, beatmapEventData)
         {
             this.customEventData = customEventData;
             this.beatmapCustomData = customData;

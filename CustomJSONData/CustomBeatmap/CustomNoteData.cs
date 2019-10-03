@@ -8,7 +8,9 @@ namespace CustomJSONData.CustomBeatmap
 {
     public class CustomNoteData : NoteData
     {
-        public CustomNoteData(int id, float time, int lineIndex, NoteLineLayer noteLineLayer, NoteLineLayer startNoteLineLayer, NoteType noteType, NoteCutDirection cutDirection, float timeToNextBasicNote, float timeToPrevBasicNote, dynamic customData) : base(id, time, lineIndex, noteLineLayer, startNoteLineLayer, noteType, cutDirection, timeToNextBasicNote, timeToPrevBasicNote)
+        public CustomNoteData(int id, float time, int lineIndex, NoteLineLayer noteLineLayer, NoteLineLayer startNoteLineLayer, NoteType noteType, NoteCutDirection cutDirection, 
+                              float timeToNextBasicNote, float timeToPrevBasicNote, dynamic customData) 
+                       : base(id, time, lineIndex, noteLineLayer, startNoteLineLayer, noteType, cutDirection, timeToNextBasicNote, timeToPrevBasicNote)
         {
             this.customData = customData;
         }

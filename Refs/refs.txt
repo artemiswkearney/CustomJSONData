@@ -10,7 +10,7 @@
 """"dll
 """"CoreModule.
 """""dll
-"""""xml
+"""""xml?optional
 "Libs/
 ""0Harmony.1.2.0.1.dll
 ""Newtonsoft.Json.12.0.0.0.dll
