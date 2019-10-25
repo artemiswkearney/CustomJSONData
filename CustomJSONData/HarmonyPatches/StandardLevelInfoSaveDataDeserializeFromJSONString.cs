@@ -14,6 +14,7 @@ namespace CustomJSONData.HarmonyPatches
     {
         public static void Postfix(string stringData, ref StandardLevelInfoSaveData __result)
         {
+            //Plugin.logger.Debug("In DeserializeFromJSONString");
             if (__result == null)
             {
                 //Plugin.logger.Info("Result null with data:\n" + stringData);

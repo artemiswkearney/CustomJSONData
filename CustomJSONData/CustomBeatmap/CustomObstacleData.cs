@@ -13,5 +13,9 @@ namespace CustomJSONData.CustomBeatmap
             this.customData = customData;
         }
         public dynamic customData;
+        public override BeatmapObjectData GetCopy()
+        {
+            return new CustomObstacleData(id, time, lineIndex, obstacleType, duration, width, Trees.copy(customData));
+        }
     }
 }

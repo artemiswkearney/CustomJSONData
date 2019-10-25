@@ -24,6 +24,7 @@ namespace CustomJSONData.HarmonyExtensions
     {
         public static bool Prefix(string json, float beatsPerMinute, float shuffle, float shufflePeriod, ref BeatmapData __result)
         {
+            //Plugin.logger.Debug("In GetBeatmapDataFromJson");
 
             CustomBeatmapSaveData saveData = CustomBeatmapSaveData.DeserializeFromJSONString(json);
             if (saveData == null) return true;
