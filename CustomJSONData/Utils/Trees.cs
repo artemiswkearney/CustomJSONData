@@ -102,6 +102,7 @@ namespace CustomJSONData
         /// <summary>
         /// Safely accesses a member of a tree, returning <paramref name="defaultValue"/> if the member does not exist or if <paramref name="tree"/> is null.
         /// If <typeparamref name="T"/> is a value type and you want <paramref name="defaultValue"/> to be null, use <see cref="getNullable{T}(TreeDict, string, T?)"/>.
+        /// If you want <typeparamref name="T"/> to be Tree, use <see cref="getTree(TreeDict, string, dynamic)"/>.
         /// </summary>
         /// <typeparam name="T">The type of the member to be returned</typeparam>
         /// <param name="tree">The tree to access a member of</param>
@@ -163,6 +164,22 @@ namespace CustomJSONData
 
         /// <summary>
         /// Safely accesses a member of a tree, returning <paramref name="defaultValue"/> if the member does not exist or if <paramref name="tree"/> is null.
+        /// Use <see cref="get{T}(object, string, T)"/> unless the member you're getting is a Tree.
+        /// </summary>
+        /// <param name="tree">The tree to access a member of</param>
+        /// <param name="memberName">The name of the member to be accessed</param>
+        /// <param name="defaultValue">The value to be returned if <paramref name="tree"/> is null or has no member <paramref name="memberName"/></param>
+        /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
+        public static dynamic getTree(TreeDict tree, string memberName, dynamic defaultValue = null)
+        {
+            if (tree == null) return defaultValue;
+            if (!tree.TryGetValue(memberName, out dynamic result))
+                return defaultValue;
+            return result;
+        }
+
+        /// <summary>
+        /// Safely accesses a member of a tree, returning <paramref name="defaultValue"/> if the member does not exist or if <paramref name="tree"/> is null.
         /// If <typeparamref name="T"/> is a value type and you want <paramref name="defaultValue"/> to be null, use <see cref="getNullable{T}(object, string, T?)"/>.
         /// </summary>
         /// <typeparam name="T">The type of the member to be returned</typeparam>
@@ -218,6 +235,27 @@ namespace CustomJSONData
         /// <seealso cref="getNullable{T}(object, string, T?)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T? GetNullable<T>(object t, string m, T? d = default) where T : struct => getNullable(t, m, d);
+
+        /// <summary>
+        /// Safely accesses a member of a tree, returning <paramref name="defaultValue"/> if the member does not exist or if <paramref name="tree"/> is null.
+        /// Use <see cref="get{T}(object, string, T)"/> unless the member you're getting is a Tree.
+        /// </summary>
+        /// <param name="tree">The tree to access a member of</param>
+        /// <param name="memberName">The name of the member to be accessed</param>
+        /// <param name="defaultValue">The value to be returned if <paramref name="tree"/> is null or has no member <paramref name="memberName"/></param>
+        /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
+        public static dynamic getTree(object tree, string memberName, dynamic defaultValue = null)
+        {
+            try
+            {
+                if ((TreeDict)tree == null) return defaultValue;
+                return getTree((TreeDict)tree, memberName, defaultValue);
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
 
         /// <summary>
         /// Evaluates <paramref name="func"/> and returns its result. If <paramref name="func"/> throws an exception, returns null instead.
