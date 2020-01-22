@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CustomJSONData.CustomBeatmap
 {
-    class CustomBeatmapEventData : BeatmapEventData
+    public class CustomBeatmapEventData : BeatmapEventData
     {
         public dynamic customData { get; private set; }
         public CustomBeatmapEventData(float time, BeatmapEventType type, int value, dynamic customData) : base(time, type, value)
