@@ -13,7 +13,7 @@ namespace CustomJSONData.CustomBeatmap
         {
             this.customData = customData;
         }
-        public override BeatmapEventData GetCopy()
+        public BeatmapEventData GetCopy()
         {
             return new CustomBeatmapEventData(time, type, value, Trees.copy(customData));
         }

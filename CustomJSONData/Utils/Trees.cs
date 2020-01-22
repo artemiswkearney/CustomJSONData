@@ -428,5 +428,19 @@ namespace CustomJSONData
         /// <seealso cref="isTree(object)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsTree(object o) => isTree(o);
+
+        /// <summary>
+        /// Converts an array of 3 doubles to a Vector3. Useful for loading Vector3s from Trees.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        public static UnityEngine.Vector3? toVector3(this double[] array)
+        {
+            if (array != null && array.Length >= 3)
+            {
+                return new UnityEngine.Vector3((float)array[0], (float)array[1], (float)array[2]);
+            }
+            return null;
+        }
     }
 }

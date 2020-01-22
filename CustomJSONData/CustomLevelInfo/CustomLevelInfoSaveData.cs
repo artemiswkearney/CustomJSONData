@@ -24,9 +24,9 @@ namespace CustomJSONData.CustomLevelInfo
 
         public CustomLevelInfoSaveData(string songName, string songSubName, string songAuthorName, string levelAuthorName, float beatsPerMinute, float songTimeOffset, 
                                        float shuffle, float shufflePeriod, float previewStartTime, float previewDuration, string songFilename, string coverImageFilename, 
-                                       string environmentName, DifficultyBeatmapSet[] difficultyBeatmapSets, dynamic customData, Dictionary<string, dynamic> beatmapCustomDatasByFilename) 
+                                       string environmentName, string allDirectionsEnvironmentName, DifficultyBeatmapSet[] difficultyBeatmapSets, dynamic customData, Dictionary<string, dynamic> beatmapCustomDatasByFilename) 
                                 : base(songName, songSubName, songAuthorName, levelAuthorName, beatsPerMinute, songTimeOffset, shuffle, shufflePeriod, previewStartTime, 
-                                        previewDuration, songFilename, coverImageFilename, environmentName, difficultyBeatmapSets)
+                                        previewDuration, songFilename, coverImageFilename, environmentName, allDirectionsEnvironmentName, difficultyBeatmapSets)
         {
             _customData = customData;
             this.beatmapCustomDatasByFilename = beatmapCustomDatasByFilename;
@@ -55,7 +55,7 @@ namespace CustomJSONData.CustomLevelInfo
             CustomLevelInfoSaveData result = new CustomLevelInfoSaveData(standardSaveData.songName, standardSaveData.songSubName, standardSaveData.songAuthorName, standardSaveData.levelAuthorName, 
                                                                          standardSaveData.beatsPerMinute, standardSaveData.songTimeOffset, standardSaveData.shuffle, standardSaveData.shufflePeriod, 
                                                                          standardSaveData.previewStartTime, standardSaveData.previewDuration, standardSaveData.songFilename, standardSaveData.coverImageFilename, 
-                                                                         standardSaveData.environmentName, customBeatmapSets, customDatas._customData ?? Tree(), beatmapsByFilename);
+                                                                         standardSaveData.environmentName, standardSaveData.allDirectionsEnvironmentName, customBeatmapSets, customDatas._customData ?? Tree(), beatmapsByFilename);
             return result;
         }
 

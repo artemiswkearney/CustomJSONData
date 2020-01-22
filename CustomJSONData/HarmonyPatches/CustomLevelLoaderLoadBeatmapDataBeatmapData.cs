@@ -11,8 +11,8 @@ using static CustomJSONData.Trees;
 
 namespace CustomJSONData.HarmonyPatches
 {
-    [HarmonyPatch(typeof(CustomLevelLoaderSO), "LoadBeatmapDataBeatmapData")]
-    class CustomLevelLoaderSOLoadBeatmapDataBeatmapData // sic
+    [HarmonyPatch(typeof(CustomLevelLoader), "LoadBeatmapDataBeatmapData")]
+    class CustomLevelLoaderLoadBeatmapDataBeatmapData // sic
     {
         static bool Prefix(string customLevelPath, string difficultyFileName, StandardLevelInfoSaveData standardLevelInfoSaveData, ref BeatmapData __result)
         {
@@ -71,6 +71,18 @@ namespace CustomJSONData.HarmonyPatches
                             else if (obj is NoteData no)
                             {
                                 Plugin.logger.Debug("Non-custom note at " + no.time);
+                            }
+                        }
+                    }
+                    foreach (var pair in beatmapData.customEventData)
+                    {
+                        Plugin.logger.Debug("Custom event \"" + pair.Key + "\":");
+                        foreach (var e in pair.Value)
+                        {
+                            Plugin.logger.Debug("    " + e.time + ":");
+                            foreach (var innerPair in (IDictionary<string, object>)e.data)
+                            {
+                                Plugin.logger.Debug("        \"" + innerPair.Key + "\": " + innerPair.Value);
                             }
                         }
                     }

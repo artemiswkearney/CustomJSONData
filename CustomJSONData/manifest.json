@@ -2,13 +2,13 @@
     "$schema": "https://raw.githubusercontent.com/beat-saber-modding-group/BSIPA-MetadataFileSchema/master/Schema.json",
     "author": "Arti",
     "description": "Adds support for loading of and access to arbitrary data on beatmap difficulties, notes, lighting events, and obstacles",
-    "gameVersion": "1.1.0",
+    "gameVersion": "1.6.2",
     "dependsOn": {
-        "BSIPA":"^3.12.19"
+        "BSIPA":"^3.13.2"
     },
     "id": "CustomJSONData",
     "name": "CustomJSONData",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "icon": "CustomJSONData.icon.png",
     "links": {
         "project-home": "https://github.com/artemiswkearney/CustomJSONData/wiki",
