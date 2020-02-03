@@ -258,6 +258,33 @@ namespace CustomJSONData
         }
 
         /// <summary>
+        /// Safely accesses a member of a tree that represents a <see cref="UnityEngine.Vector3"/>, returning null if the member does not exist or if <paramref name="tree"/> is null.
+        /// The tree member should be formatted in JSON as an array of three numbers.
+        /// Use <see cref="get{T}(object, string, T)"/> unless the member you're getting represents a Vector3.
+        /// </summary>
+        /// <param name="tree">The tree to access a member of</param>
+        /// <param name="memberName">The name of the member to be accessed</param>
+        /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/> interpreted as a <see cref="UnityEngine.Vector3"/>, or null if tree is null or no such member exists</returns>
+        public static UnityEngine.Vector3? getVector3(object tree, string memberName)
+        {
+            return get<List<object>>(tree, memberName)?.toVector3();
+        }
+
+        /// <summary>
+        /// Safely accesses a member of a tree that represents a <see cref="UnityEngine.Vector3"/>, returning <paramref name="defaultValue"/> if the member does not exist or if <paramref name="tree"/> is null.
+        /// The tree member should be formatted in JSON as an array of three numbers.
+        /// Use <see cref="get{T}(object, string, T)"/> unless the member you're getting represents a Vector3.
+        /// </summary>
+        /// <param name="tree">The tree to access a member of</param>
+        /// <param name="memberName">The name of the member to be accessed</param>
+        /// <param name="defaultValue">The value to return if tree is null or has no member <paramref name="memberName"/></param>
+        /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/> interpreted as a <see cref="UnityEngine.Vector3"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
+        public static UnityEngine.Vector3 getVector3(object tree, string memberName, UnityEngine.Vector3 defaultValue)
+        {
+            return getVector3(tree, memberName) ?? defaultValue;
+        }
+
+        /// <summary>
         /// Evaluates <paramref name="func"/> and returns its result. If <paramref name="func"/> throws an exception, returns null instead.
         /// </summary>
         /// <param name="func">The function to be evaluated.</param>
@@ -430,7 +457,7 @@ namespace CustomJSONData
         public static bool IsTree(object o) => isTree(o);
 
         /// <summary>
-        /// Converts an array of 3 doubles to a Vector3. Useful for loading Vector3s from Trees.
+        /// Converts an array of 3 doubles to a Vector3. Would be useful for loading Vector3s from Trees, if JSON arrays were C# arrays.
         /// </summary>
         /// <param name="array"></param>
         /// <returns></returns>
@@ -439,6 +466,43 @@ namespace CustomJSONData
             if (array != null && array.Length >= 3)
             {
                 return new UnityEngine.Vector3((float)array[0], (float)array[1], (float)array[2]);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Converts a <see cref="List{Object}"/> of 3 simple numerics to a Vector3. Useful for loading Vector3s from Trees.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        public static UnityEngine.Vector3? toVector3(this List<object> list)
+        {
+            float? toFloat(object o)
+            {
+                switch (o)
+                {
+                    case sbyte sb: return sb;
+                    case byte b: return b;
+                    case short s: return s;
+                    case ushort us: return us;
+                    case int i: return i;
+                    case uint ui: return ui;
+                    case long l: return l;
+                    case ulong ul: return ul;
+                    case char c: return c;
+                    case float f: return f;
+                    case double d: return (float)d;
+                    case decimal d: return (float)d;
+                    default: return null;
+                }
+            }
+            if (list != null && list.Count >= 3)
+            {
+                var x = toFloat(list[0]);
+                var y = toFloat(list[1]);
+                var z = toFloat(list[2]);
+                if (x != null && y != null && z != null)
+                    return new UnityEngine.Vector3(x.Value, y.Value, z.Value);
             }
             return null;
         }

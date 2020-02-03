@@ -10,7 +10,7 @@ namespace CustomJSONData
     public class Plugin : IBeatSaberPlugin
     {
         public string Name => "CustomJSONData";
-        public string Version => "0.0.3";
+        public string Version => "0.0.4";
         public static readonly List<string> licenses = new List<string>()
         {
         };
