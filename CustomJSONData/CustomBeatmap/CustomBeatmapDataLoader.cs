@@ -112,7 +112,7 @@ namespace CustomJSONData.CustomBeatmap
                 foreach (CustomBeatmapSaveData.CustomEventData customEventData in customEventsSaveData)
                 {
                     if (!customEvents.ContainsKey(customEventData.type)) customEvents[customEventData.type] = new List<CustomEventData>();
-                    customEvents[customEventData.type].Add(new CustomEventData(Convert.ToInt32(GetRealTimeFromBPMTime.Invoke(null, new object[] { customEventData.time, beatsPerMinute, shuffle, shufflePeriod })), customEventData.type, customEventData.data ?? Tree()));
+                    customEvents[customEventData.type].Add(new CustomEventData(Convert.ToSingle(GetRealTimeFromBPMTime.Invoke(null, new object[] { customEventData.time, beatsPerMinute, shuffle, shufflePeriod })), customEventData.type, customEventData.data ?? Tree()));
                 }
                 foreach (var pair in customEvents)
                 {
