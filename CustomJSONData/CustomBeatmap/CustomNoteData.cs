@@ -14,10 +14,16 @@ namespace CustomJSONData.CustomBeatmap
         {
             this.customData = customData;
         }
+        public CustomNoteData(int id, float time, int lineIndex, NoteLineLayer noteLineLayer, NoteLineLayer startNoteLineLayer, NoteType noteType, NoteCutDirection cutDirection,
+                              float timeToNextBasicNote, float timeToPrevBasicNote, int flipLineIndex, float flipYSide, dynamic customData)
+                       : base(id, time, lineIndex, noteLineLayer, startNoteLineLayer, noteType, cutDirection, timeToNextBasicNote, timeToPrevBasicNote, flipLineIndex, flipYSide)
+        {
+            this.customData = customData;
+        }
         public dynamic customData { get; private set; }
         public override BeatmapObjectData GetCopy()
         {
-            return new CustomNoteData(id, time, lineIndex, noteLineLayer, startNoteLineLayer, noteType, cutDirection, timeToNextBasicNote, timeToPrevBasicNote, Trees.copy(customData));
+            return new CustomNoteData(id, time, lineIndex, noteLineLayer, startNoteLineLayer, noteType, cutDirection, timeToNextBasicNote, timeToPrevBasicNote, flipLineIndex, flipYSide, Trees.copy(customData));
         }
     }
 }
