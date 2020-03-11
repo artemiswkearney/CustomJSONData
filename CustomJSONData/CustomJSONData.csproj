@@ -91,6 +91,9 @@
     <Compile Include="CustomBeatmap\CustomNoteData.cs" />
     <Compile Include="CustomBeatmap\CustomObstacleData.cs" />
     <Compile Include="CustomLevelInfo\CustomLevelInfoSaveData.cs" />
+    <Compile Include="HarmonyPatches\BeatDataTransformHelper\BeatmapDataStaticLightsTransform.cs" />
+    <Compile Include="HarmonyPatches\BeatDataTransformHelper\BeatmapDataObstaclesAndBombsTransformCreateTransformedData.cs" />
+    <Compile Include="HarmonyPatches\BeatDataTransformHelper\BeatDataMirrorTransformCreateTransformData.cs" />
     <Compile Include="HarmonyPatches\BeatmapDataLoaderGetBeatmapDataFromJson.cs" />
     <Compile Include="HarmonyPatches\CustomLevelLoaderLoadBeatmapDataBeatmapData.cs" />
     <Compile Include="HarmonyPatches\StandardLevelInfoSaveDataDeserializeFromJSONString.cs" />
