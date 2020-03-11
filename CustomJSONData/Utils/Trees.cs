@@ -285,6 +285,33 @@ namespace CustomJSONData
         }
 
         /// <summary>
+        /// Safely accesses a member of a tree that represents a <see cref="UnityEngine.Vector4"/>, returning null if the member does not exist or if <paramref name="tree"/> is null.
+        /// The tree member should be formatted in JSON as an array of four numbers.
+        /// Use <see cref="get{T}(object, string, T)"/> unless the member you're getting represents a Vector4.
+        /// </summary>
+        /// <param name="tree">The tree to access a member of</param>
+        /// <param name="memberName">The name of the member to be accessed</param>
+        /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/> interpreted as a <see cref="UnityEngine.Vector4"/>, or null if tree is null or no such member exists</returns>
+        public static UnityEngine.Vector4? getVector4(object tree, string memberName)
+        {
+            return get<List<object>>(tree, memberName)?.toVector4();
+        }
+
+        /// <summary>
+        /// Safely accesses a member of a tree that represents a <see cref="UnityEngine.Vector4"/>, returning <paramref name="defaultValue"/> if the member does not exist or if <paramref name="tree"/> is null.
+        /// The tree member should be formatted in JSON as an array of four numbers.
+        /// Use <see cref="get{T}(object, string, T)"/> unless the member you're getting represents a Vector4.
+        /// </summary>
+        /// <param name="tree">The tree to access a member of</param>
+        /// <param name="memberName">The name of the member to be accessed</param>
+        /// <param name="defaultValue">The value to return if tree is null or has no member <paramref name="memberName"/></param>
+        /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/> interpreted as a <see cref="UnityEngine.Vector4"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
+        public static UnityEngine.Vector3 getVector4(object tree, string memberName, UnityEngine.Vector4 defaultValue)
+        {
+            return getVector4(tree, memberName) ?? defaultValue;
+        }
+
+        /// <summary>
         /// Evaluates <paramref name="func"/> and returns its result. If <paramref name="func"/> throws an exception, returns null instead.
         /// </summary>
         /// <param name="func">The function to be evaluated.</param>
@@ -477,32 +504,31 @@ namespace CustomJSONData
         /// <returns></returns>
         public static UnityEngine.Vector3? toVector3(this List<object> list)
         {
-            float? toFloat(object o)
-            {
-                switch (o)
-                {
-                    case sbyte sb: return sb;
-                    case byte b: return b;
-                    case short s: return s;
-                    case ushort us: return us;
-                    case int i: return i;
-                    case uint ui: return ui;
-                    case long l: return l;
-                    case ulong ul: return ul;
-                    case char c: return c;
-                    case float f: return f;
-                    case double d: return (float)d;
-                    case decimal d: return (float)d;
-                    default: return null;
-                }
-            }
             if (list != null && list.Count >= 3)
             {
-                var x = toFloat(list[0]);
-                var y = toFloat(list[1]);
-                var z = toFloat(list[2]);
+                var x = tryNull(() => Convert.ToSingle(list[0]));
+                var y = tryNull(() => Convert.ToSingle(list[1]));
+                var z = tryNull(() => Convert.ToSingle(list[2]));
                 if (x != null && y != null && z != null)
                     return new UnityEngine.Vector3(x.Value, y.Value, z.Value);
+            }
+            return null;
+        }
+        /// <summary>
+        /// Converts a <see cref="List{Object}"/> of 4 simple numerics to a Vector4. Useful for loading Vector4s from Trees.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        public static UnityEngine.Vector4? toVector4(this List<object> list)
+        {
+            if (list != null && list.Count >= 3)
+            {
+                var x = tryNull(() => Convert.ToSingle(list[0]));
+                var y = tryNull(() => Convert.ToSingle(list[1]));
+                var z = tryNull(() => Convert.ToSingle(list[2]));
+                var w = tryNull(() => Convert.ToSingle(list[3]));
+                if (x != null && y != null && z != null && w != null)
+                    return new UnityEngine.Vector4(x.Value, y.Value, z.Value, w.Value);
             }
             return null;
         }
