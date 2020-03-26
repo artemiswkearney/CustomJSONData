@@ -47,8 +47,8 @@
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony.1.2.0.1">
-      <HintPath>..\Refs\0Harmony.1.2.0.1.dll</HintPath>
+    <Reference Include="0Harmony">
+      <HintPath>..\Refs\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="IPA.Loader, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -56,8 +56,8 @@
       <HintPath>..\Refs\IPA.Loader.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MainAssembly">
-      <HintPath>..\Refs\MainAssembly.dll</HintPath>
+    <Reference Include="Main">
+      <HintPath>..\Refs\Main.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
