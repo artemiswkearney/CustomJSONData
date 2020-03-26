@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CustomJSONData.CustomBeatmap;
 using CustomJSONData.CustomLevelInfo;
-using Harmony;
+using HarmonyLib;
 using static CustomJSONData.Trees;
 
 namespace CustomJSONData.HarmonyPatches
