@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CustomJSONData.CustomBeatmap;
 using CustomJSONData.CustomLevelInfo;
-using Harmony;
+using HarmonyLib;
 using static CustomJSONData.Trees;
 
 namespace CustomJSONData.HarmonyPatches
@@ -14,7 +14,7 @@ namespace CustomJSONData.HarmonyPatches
     [HarmonyPatch(typeof(CustomLevelLoader), "LoadBeatmapDataBeatmapData")]
     class CustomLevelLoaderLoadBeatmapDataBeatmapData // sic
     {
-        static bool Prefix(string customLevelPath, string difficultyFileName, StandardLevelInfoSaveData standardLevelInfoSaveData, ref BeatmapData __result)
+        static bool Prefix(BeatmapDataLoader ____beatmapDataLoader, string customLevelPath, string difficultyFileName, StandardLevelInfoSaveData standardLevelInfoSaveData, ref BeatmapData __result)
         {
             //Plugin.logger.Debug("In LoadBeatmapDataBeatmapData");
             string path = Path.Combine(customLevelPath, difficultyFileName);
@@ -27,17 +27,17 @@ namespace CustomJSONData.HarmonyPatches
                 if (bsd == null)
                 {
                     //Plugin.logger.Debug("CustomBeatmapSaveData was null; falling back to BeatmapDataLoader.GetBeatmapDataFromJson");
-                    __result = BeatmapDataLoader.GetBeatmapDataFromJson(json, standardLevelInfoSaveData.beatsPerMinute, standardLevelInfoSaveData.shuffle, standardLevelInfoSaveData.shufflePeriod);
+                    __result = ____beatmapDataLoader.GetBeatmapDataFromJson(json, standardLevelInfoSaveData.beatsPerMinute, standardLevelInfoSaveData.shuffle, standardLevelInfoSaveData.shufflePeriod);
                 }
                 else if (standardLevelInfoSaveData is CustomLevelInfoSaveData lisd)
                 {
                     //Plugin.logger.Debug("Loaded CustomBeatmapSaveData with CustomLevelInfoSaveData");
-                    __result = CustomBeatmapDataLoader.GetBeatmapDataFromBeatmapSaveData(bsd.notes, bsd.obstacles, bsd.events, lisd.beatsPerMinute, lisd.shuffle, lisd.shufflePeriod, bsd.customEvents ?? new List<CustomBeatmapSaveData.CustomEventData>(), at(lisd.beatmapCustomDatasByFilename, difficultyFileName) ?? Tree(), lisd.customData ?? Tree());
+                    __result = CustomBeatmapDataLoader.GetBeatmapDataFromBeatmapSaveData(bsd.notes, bsd.obstacles, bsd.events, lisd.beatsPerMinute, lisd.shuffle, lisd.shufflePeriod, bsd.customEvents ?? new List<CustomBeatmapSaveData.CustomEventData>(), at(lisd.beatmapCustomDatasByFilename, difficultyFileName) ?? Tree(), lisd.customData ?? Tree(), ____beatmapDataLoader);
                 }
                 else
                 {
                     //Plugin.logger.Debug("Loaded CustomBeatmapSaveData with StandardLevelInfoSaveData");
-                    __result = CustomBeatmapDataLoader.GetBeatmapDataFromBeatmapSaveData(bsd.notes, bsd.obstacles, bsd.events, standardLevelInfoSaveData.beatsPerMinute, standardLevelInfoSaveData.shuffle, standardLevelInfoSaveData.shufflePeriod, bsd.customEvents ?? new List<CustomBeatmapSaveData.CustomEventData>(), Tree(), Tree());
+                    __result = CustomBeatmapDataLoader.GetBeatmapDataFromBeatmapSaveData(bsd.notes, bsd.obstacles, bsd.events, standardLevelInfoSaveData.beatsPerMinute, standardLevelInfoSaveData.shuffle, standardLevelInfoSaveData.shufflePeriod, bsd.customEvents ?? new List<CustomBeatmapSaveData.CustomEventData>(), Tree(), Tree(), ____beatmapDataLoader);
                 }
                 /*
                 if (__result is CustomBeatmapData beatmapData)

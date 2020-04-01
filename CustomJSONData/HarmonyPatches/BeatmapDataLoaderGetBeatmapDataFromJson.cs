@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Newtonsoft.Json;
 using CustomJSONData.CustomBeatmap;
 using System;
@@ -22,14 +22,14 @@ namespace CustomJSONData.HarmonyExtensions
         })]
     class BeatmapDataLoaderGetBeatmapDataFromJson
     {
-        public static bool Prefix(string json, float beatsPerMinute, float shuffle, float shufflePeriod, ref BeatmapData __result)
+        public static bool Prefix(BeatmapDataLoader __instance, string json, float startBPM, float shuffle, float shufflePeriod, ref BeatmapData __result)
         {
             //Plugin.logger.Debug("In GetBeatmapDataFromJson");
 
             CustomBeatmapSaveData saveData = CustomBeatmapSaveData.DeserializeFromJSONString(json);
             if (saveData == null) return true;
 
-            __result = CustomBeatmapDataLoader.GetBeatmapDataFromBeatmapSaveData(saveData.notes, saveData.obstacles, saveData.events, beatsPerMinute, shuffle, shufflePeriod, saveData.customEvents ?? new List<CustomBeatmapSaveData.CustomEventData>(), Tree(), Tree());
+            __result = CustomBeatmapDataLoader.GetBeatmapDataFromBeatmapSaveData(saveData.notes, saveData.obstacles, saveData.events, startBPM, shuffle, shufflePeriod, saveData.customEvents ?? new List<CustomBeatmapSaveData.CustomEventData>(), Tree(), Tree(), __instance);
             if (!(__result is CustomBeatmapData)) return true;
 
             CustomBeatmapData beatmapData = __result as CustomBeatmapData;
