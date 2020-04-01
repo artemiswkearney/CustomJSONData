@@ -4,10 +4,11 @@
     "description": "Adds support for loading of and access to arbitrary data on beatmap difficulties, notes, lighting events, and obstacles",
     "gameVersion": "1.8.0",
     "dependsOn": {
+        "BSIPA":"^4.0.2"
     },
     "id": "CustomJSONData",
     "name": "CustomJSONData",
-    "version": "0.1.0",
+    "version": "0.1.2",
     "icon": "CustomJSONData.icon.png",
     "links": {
         "project-home": "https://github.com/artemiswkearney/CustomJSONData/wiki",

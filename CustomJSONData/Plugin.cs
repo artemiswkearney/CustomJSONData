@@ -8,8 +8,11 @@ using UnityEngine.SceneManagement;
 namespace CustomJSONData
 {
     [Plugin(RuntimeOptions.SingleStartInit)]
-    internal class Plugin
+    public class Plugin
     {
+        public static readonly List<string> licenses = new List<string>()
+        {
+        };
         public static Logger logger;
         [Init]
         public void Init(Logger l)

@@ -506,9 +506,9 @@ namespace CustomJSONData
         {
             if (list != null && list.Count >= 3)
             {
-                var x = tryNull(() => Convert.ToSingle(list[0]));
-                var y = tryNull(() => Convert.ToSingle(list[1]));
-                var z = tryNull(() => Convert.ToSingle(list[2]));
+                float? x = tryNull(() => Convert.ToSingle(list[0]));
+                float? y = tryNull(() => Convert.ToSingle(list[1]));
+                float? z = tryNull(() => Convert.ToSingle(list[2]));
                 if (x != null && y != null && z != null)
                     return new UnityEngine.Vector3(x.Value, y.Value, z.Value);
             }
@@ -523,10 +523,10 @@ namespace CustomJSONData
         {
             if (list != null && list.Count >= 3)
             {
-                var x = tryNull(() => Convert.ToSingle(list[0]));
-                var y = tryNull(() => Convert.ToSingle(list[1]));
-                var z = tryNull(() => Convert.ToSingle(list[2]));
-                var w = tryNull(() => Convert.ToSingle(list[3]));
+                float? x = tryNull(() => Convert.ToSingle(list[0]));
+                float? y = tryNull(() => Convert.ToSingle(list[1]));
+                float? z = tryNull(() => Convert.ToSingle(list[2]));
+                float? w = tryNull(() => Convert.ToSingle(list[3]));
                 if (x != null && y != null && z != null && w != null)
                     return new UnityEngine.Vector4(x.Value, y.Value, z.Value, w.Value);
             }
