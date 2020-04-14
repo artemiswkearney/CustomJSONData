@@ -60,7 +60,8 @@ namespace CustomJSONData.HarmonyPatches
             for (int l = 0; l < list.Count; l++)
             {
                 BeatmapObjectData beatmapObjectData = list[l];
-                array2[beatmapObjectData.lineIndex]++;
+                int numC = beatmapObjectData.lineIndex > 3 ? 3 : beatmapObjectData.lineIndex < 0 ? 0 : beatmapObjectData.lineIndex;
+                array2[numC]++;
             }
             BeatmapLineData[] array3 = new BeatmapLineData[beatmapLinesData.Length];
             for (int m = 0; m < beatmapLinesData.Length; m++)
@@ -72,7 +73,7 @@ namespace CustomJSONData.HarmonyPatches
             for (int n = 0; n < list.Count; n++)
             {
                 BeatmapObjectData beatmapObjectData2 = list[n];
-                int lineIndex = beatmapObjectData2.lineIndex;
+                int lineIndex = beatmapObjectData2.lineIndex > 3 ? 3 : beatmapObjectData2.lineIndex < 0 ? 0 : beatmapObjectData2.lineIndex;
                 array3[lineIndex].beatmapObjectsData[array[lineIndex]] = beatmapObjectData2;
                 array[lineIndex]++;
             }
