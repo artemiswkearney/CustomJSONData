@@ -1,5 +1,7 @@
 ﻿using CustomJSONData.CustomBeatmap;
 using HarmonyLib;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -25,7 +27,6 @@ namespace CustomJSONData.HarmonyPatches
         private static readonly ConstructorInfo EventDataCtor = typeof(BeatmapEventData).GetConstructors().First();
         private static readonly ConstructorInfo CustomEventDataCtor = typeof(CustomBeatmapEventData).GetConstructors().First();
         private static readonly MethodInfo EventCustomData = SymbolExtensions.GetMethodInfo(() => GetEventCustomData(null));
-
 
         private static readonly ConstructorInfo BeatmapDataCtor = typeof(BeatmapData).GetConstructors().First();
         private static readonly MethodInfo InjectCustom = SymbolExtensions.GetMethodInfo(() => InjectCustomData(null, null, null, null, 0, 0));
@@ -66,7 +67,7 @@ namespace CustomJSONData.HarmonyPatches
 
                     foundEventData = true;
                 }
-                if (!foundBeatmapData && 
+                if (!foundBeatmapData &&
                     instructionList[i].opcode == OpCodes.Newobj &&
                     instructionList[i].operand == BeatmapDataCtor)
                 {
@@ -114,23 +115,54 @@ namespace CustomJSONData.HarmonyPatches
         }
 
         private static BeatmapData InjectCustomData(BeatmapLineData[] beatmapLineData, BeatmapEventData[] beatmapEventData,
-            BeatmapDataLoader beatmapDataLoader, List<dynamic> BPMChanges, float shuffle, float shufflePeriod)
+            BeatmapDataLoader beatmapDataLoader, dynamic RawBPMChanges, float shuffle, float shufflePeriod)
         {
             List<CustomEventData> customEvents = new List<CustomEventData>(customEventsSaveData.Count);
             foreach (CustomBeatmapSaveData.CustomEventData customEventData in customEventsSaveData)
             {
                 int num = 0;
                 float time = customEventData.time;
+
+                // BeatmapDataLoader's BPMChangeData is private so we get to do a crap top of reflection to convert it to our BPMChangeData
+                Type genericList = typeof(List<>);
+                Type BPMChangeData = Type.GetType("BeatmapDataLoader+BPMChangeData,Main");
+                Type constructedType = genericList.MakeGenericType(new Type[] { BPMChangeData });
+                List<BPMChangeData> BPMChanges = new List<BPMChangeData>();
+                foreach (object i in RawBPMChanges as IEnumerable)
+                {
+                    float bpmChangeStartTime = (float)i.GetType().GetField("bpmChangeStartTime").GetValue(i);
+                    float bpmChangeStartBPMTime = (float)i.GetType().GetField("bpmChangeStartBPMTime").GetValue(i);
+                    float bpm = (float)i.GetType().GetField("bpm").GetValue(i);
+
+                    BPMChanges.Add(new BPMChangeData(bpmChangeStartTime, bpmChangeStartBPMTime, bpm));
+                }
+
                 while (num < BPMChanges.Count - 1 && BPMChanges[num + 1].bpmChangeStartBPMTime < time)
                 {
                     num++;
                 }
-                dynamic bpmchangeData = BPMChanges[num];
+                BPMChangeData bpmchangeData = BPMChanges[num];
                 float realTime = bpmchangeData.bpmChangeStartTime + beatmapDataLoader.GetRealTimeFromBPMTime(time - bpmchangeData.bpmChangeStartBPMTime, bpmchangeData.bpm, shuffle, shufflePeriod);
+
                 customEvents.Add(new CustomEventData(realTime, customEventData.type, customEventData.data ?? Tree()));
             }
-            customEvents.ForEach(n => Logger.Log($"time: {n.time} ; type:{n.type}"));
             return new CustomBeatmapData(beatmapLineData, beatmapEventData, customEvents.ToArray(), Tree(), Tree());
+        }
+
+        private struct BPMChangeData
+        {
+            public BPMChangeData(float bpmChangeStartTime, float bpmChangeStartBPMTime, float bpm)
+            {
+                this.bpmChangeStartTime = bpmChangeStartTime;
+                this.bpmChangeStartBPMTime = bpmChangeStartBPMTime;
+                this.bpm = bpm;
+            }
+
+            public readonly float bpmChangeStartTime;
+
+            public readonly float bpmChangeStartBPMTime;
+
+            public readonly float bpm;
         }
     }
 
@@ -140,6 +172,7 @@ namespace CustomJSONData.HarmonyPatches
     {
         private static readonly MethodInfo GetBeatmapData = typeof(BeatmapDataLoader).GetMethod("GetBeatmapDataFromBeatmapSaveData");
         private static readonly MethodInfo StoreSaveData = SymbolExtensions.GetMethodInfo(() => StoreCustomEventsSaveData(null));
+
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             List<CodeInstruction> instructionList = instructions.ToList();

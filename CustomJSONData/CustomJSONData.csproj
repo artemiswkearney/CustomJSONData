@@ -86,6 +86,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomEventCallbackController.cs" />
     <Compile Include="CustomBeatmap\CustomBeatmapData.cs" />
     <Compile Include="CustomBeatmap\CustomBeatmapEventData.cs" />
     <Compile Include="CustomBeatmap\CustomBeatmapSaveData.cs" />
@@ -97,10 +98,11 @@
     <Compile Include="HarmonyPatches\BeatDataTransformHelper\BeatmapDataStaticLightsTransform.cs" />
     <Compile Include="HarmonyPatches\BeatDataTransformHelper\BeatmapDataObstaclesAndBombsTransformCreateTransformedData.cs" />
     <Compile Include="HarmonyPatches\BeatDataTransformHelper\BeatDataMirrorTransformCreateTransformData.cs" />
-    <Compile Include="HarmonyPatches\BeatmapDataLoader.cs" />
-    <Compile Include="HarmonyPatches\BeatmapSaveData.cs" />
-    <Compile Include="HarmonyPatches\CustomLevelLoader.cs" />
-    <Compile Include="HarmonyPatches\StandardLevelInfoSaveData.cs" />
+    <Compile Include="HarmonyPatches\CustomBeatmapData\BeatmapDataLoader.cs" />
+    <Compile Include="HarmonyPatches\CustomEventCallback\BeatmapObjectCallbackController.cs" />
+    <Compile Include="HarmonyPatches\CustomBeatmapData\BeatmapSaveData.cs" />
+    <Compile Include="HarmonyPatches\CustomBeatmapData\CustomLevelLoader.cs" />
+    <Compile Include="HarmonyPatches\CustomBeatmapData\StandardLevelInfoSaveData.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
