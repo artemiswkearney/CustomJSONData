@@ -6,16 +6,13 @@ using System.Reflection;
 using System.Reflection.Emit;
 using static CustomJSONData.Trees;
 
-namespace CustomJSONData.HarmonyExtensions
+namespace CustomJSONData.HarmonyPatches
 {
     [HarmonyPatch(typeof(BeatmapDataLoader))]
     [HarmonyPatch("GetBeatmapDataFromBeatmapSaveData")]
     internal class BeatmapDataLoaderGetBeatmapDataFromBeatmapSaveData
     {
-        private static void Postfix(ref BeatmapData __result)
-        {
-            __result = new CustomBeatmapData(__result.beatmapLinesData, __result.beatmapEventData, new CustomEventData[0], Tree(), Tree());
-        }
+        internal static List<CustomBeatmapSaveData.CustomEventData> customEventsSaveData;
 
         private static readonly ConstructorInfo NoteDataCtor = typeof(NoteData).GetConstructors().First();
         private static readonly ConstructorInfo CustomNoteDataCtor = typeof(CustomNoteData).GetConstructors().First();
@@ -29,12 +26,17 @@ namespace CustomJSONData.HarmonyExtensions
         private static readonly ConstructorInfo CustomEventDataCtor = typeof(CustomBeatmapEventData).GetConstructors().First();
         private static readonly MethodInfo EventCustomData = SymbolExtensions.GetMethodInfo(() => GetEventCustomData(null));
 
+
+        private static readonly ConstructorInfo BeatmapDataCtor = typeof(BeatmapData).GetConstructors().First();
+        private static readonly MethodInfo InjectCustom = SymbolExtensions.GetMethodInfo(() => InjectCustomData(null, null, null, null, 0, 0));
+
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             List<CodeInstruction> instructionList = instructions.ToList();
             bool foundNoteData = false;
             bool foundObstacleData = false;
             bool foundEventData = false;
+            bool foundBeatmapData = false;
 #pragma warning disable CS0252
             for (int i = 0; i < instructionList.Count; i++)
             {
@@ -64,9 +66,20 @@ namespace CustomJSONData.HarmonyExtensions
 
                     foundEventData = true;
                 }
+                if (!foundBeatmapData && 
+                    instructionList[i].opcode == OpCodes.Newobj &&
+                    instructionList[i].operand == BeatmapDataCtor)
+                {
+                    foundBeatmapData = true;
+                    instructionList[i] = new CodeInstruction(OpCodes.Call, InjectCustom);
+                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldarg_0));
+                    instructionList.Insert(i + 1, new CodeInstruction(OpCodes.Ldloc_2));
+                    instructionList.Insert(i + 2, new CodeInstruction(OpCodes.Ldarg_S, 5));
+                    instructionList.Insert(i + 3, new CodeInstruction(OpCodes.Ldarg_S, 6));
+                }
             }
 #pragma warning restore CS0252
-            if (!foundNoteData || !foundObstacleData || !foundEventData) Logger.Log("Failed to patch GetBeatmapDataFromBeatmapSaveData in BeatmapDataLoader!", IPA.Logging.Logger.Level.Error);
+            if (!foundNoteData || !foundObstacleData || !foundEventData || !foundBeatmapData) Logger.Log("Failed to patch GetBeatmapDataFromBeatmapSaveData in BeatmapDataLoader!", IPA.Logging.Logger.Level.Error);
             return instructionList.AsEnumerable();
         }
 
@@ -98,6 +111,60 @@ namespace CustomJSONData.HarmonyExtensions
                 if (customData != null) return customData;
             }
             return Tree();
+        }
+
+        private static BeatmapData InjectCustomData(BeatmapLineData[] beatmapLineData, BeatmapEventData[] beatmapEventData,
+            BeatmapDataLoader beatmapDataLoader, List<dynamic> BPMChanges, float shuffle, float shufflePeriod)
+        {
+            List<CustomEventData> customEvents = new List<CustomEventData>(customEventsSaveData.Count);
+            foreach (CustomBeatmapSaveData.CustomEventData customEventData in customEventsSaveData)
+            {
+                int num = 0;
+                float time = customEventData.time;
+                while (num < BPMChanges.Count - 1 && BPMChanges[num + 1].bpmChangeStartBPMTime < time)
+                {
+                    num++;
+                }
+                dynamic bpmchangeData = BPMChanges[num];
+                float realTime = bpmchangeData.bpmChangeStartTime + beatmapDataLoader.GetRealTimeFromBPMTime(time - bpmchangeData.bpmChangeStartBPMTime, bpmchangeData.bpm, shuffle, shufflePeriod);
+                customEvents.Add(new CustomEventData(realTime, customEventData.type, customEventData.data ?? Tree()));
+            }
+            customEvents.ForEach(n => Logger.Log($"time: {n.time} ; type:{n.type}"));
+            return new CustomBeatmapData(beatmapLineData, beatmapEventData, customEvents.ToArray(), Tree(), Tree());
+        }
+    }
+
+    [HarmonyPatch(typeof(BeatmapDataLoader))]
+    [HarmonyPatch("GetBeatmapDataFromJson")]
+    internal static class BeatmapDataLoaderGetBeatmapDataFromJson
+    {
+        private static readonly MethodInfo GetBeatmapData = typeof(BeatmapDataLoader).GetMethod("GetBeatmapDataFromBeatmapSaveData");
+        private static readonly MethodInfo StoreSaveData = SymbolExtensions.GetMethodInfo(() => StoreCustomEventsSaveData(null));
+        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> instructionList = instructions.ToList();
+            bool foundGetBeatmapData = false;
+#pragma warning disable CS0252
+            for (int i = 0; i < instructionList.Count; i++)
+            {
+                if (!foundGetBeatmapData &&
+                    instructionList[i].opcode == OpCodes.Call &&
+                    instructionList[i].operand == GetBeatmapData)
+                {
+                    foundGetBeatmapData = true;
+                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_3));
+                    instructionList.Insert(i + 1, new CodeInstruction(OpCodes.Call, StoreSaveData));
+                }
+            }
+#pragma warning restore CS0252
+            if (!foundGetBeatmapData) Logger.Log("Failed to patch GetBeatmapDataFromJson in BeatmapDataLoader!", IPA.Logging.Logger.Level.Error);
+            return instructionList.AsEnumerable();
+        }
+
+        private static void StoreCustomEventsSaveData(BeatmapSaveData beatmapSaveData)
+        {
+            if (beatmapSaveData is CustomBeatmapSaveData customBeatmapSaveData)
+                BeatmapDataLoaderGetBeatmapDataFromBeatmapSaveData.customEventsSaveData = customBeatmapSaveData.customEvents;
         }
     }
 }

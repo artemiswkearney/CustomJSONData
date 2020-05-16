@@ -13,10 +13,7 @@ namespace CustomJSONData.CustomBeatmap
         }
 
         [JsonIgnore]
-        public List<CustomEventData> customEvents
-        {
-            get => _customEvents;
-        }
+        public List<CustomEventData> customEvents { get; protected set; }
 
         public new static CustomBeatmapSaveData DeserializeFromJSONString(string stringData)
         {
@@ -39,7 +36,17 @@ namespace CustomJSONData.CustomBeatmap
         }
 
         [JsonProperty]
-        protected List<CustomEventData> _customEvents;
+        protected CustomData _customData
+        {
+            set => customEvents = value._customEvents ?? new List<CustomEventData>();
+        }
+
+        [Serializable]
+        protected class CustomData
+        {
+            [JsonProperty]
+            public List<CustomEventData> _customEvents;
+        }
 
         [JsonProperty]
         protected new List<NoteData> _notes

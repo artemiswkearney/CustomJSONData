@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using static CustomJSONData.Trees;
-using CustomDataConverter = Newtonsoft.Json.Converters.ExpandoObjectConverter;
 
 namespace CustomJSONData.CustomLevelInfo
 {
@@ -30,7 +30,7 @@ namespace CustomJSONData.CustomLevelInfo
         public static StandardLevelInfoSaveData DeserializeFromJSONString(string stringData, StandardLevelInfoSaveData standardSaveData)
         {
             Dictionary<string, dynamic> beatmapsByFilename = new Dictionary<string, dynamic>();
-            OopsAllCustomDatas customDatas = JsonConvert.DeserializeObject<OopsAllCustomDatas>(stringData, new CustomDataConverter());
+            DifficultyCustomDatas customDatas = JsonConvert.DeserializeObject<DifficultyCustomDatas>(stringData, new ExpandoObjectConverter());
             DifficultyBeatmapSet[] customBeatmapSets = new DifficultyBeatmapSet[standardSaveData.difficultyBeatmapSets.Length];
             for (int i = 0; i < standardSaveData.difficultyBeatmapSets.Length; i++)
             {
@@ -68,17 +68,13 @@ namespace CustomJSONData.CustomLevelInfo
             }
         }
 
-        /// <summary>
-        ///  Kinda hacky, but saves me writing a ton of converters.
-        ///  Inspired by StandardLevelInfoSaveData.VersionCheck.
-        /// </summary>
         [Serializable]
-        private class OopsAllCustomDatas
+        private class DifficultyCustomDatas
         {
 #pragma warning disable 0649
 
             [JsonProperty]
-            [JsonConverter(typeof(CustomDataConverter))]
+            [JsonConverter(typeof(ExpandoObjectConverter))]
             public dynamic _customData;
 
             [JsonProperty]
@@ -95,11 +91,11 @@ namespace CustomJSONData.CustomLevelInfo
             public class DifficultyBeatmap
             {
                 [JsonProperty]
-                [JsonConverter(typeof(CustomDataConverter))]
+                [JsonConverter(typeof(ExpandoObjectConverter))]
                 public dynamic _customData;
             }
-        }
 
 #pragma warning restore 0649
+        }
     }
 }
