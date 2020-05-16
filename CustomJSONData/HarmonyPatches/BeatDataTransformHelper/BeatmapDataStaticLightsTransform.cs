@@ -1,31 +1,15 @@
 ﻿using HarmonyLib;
-using System.Collections.Generic;
-using CustomJSONData.CustomBeatmap;
+using static CustomJSONData.HarmonyPatches.BeatDataTransformHelperHelper;
 
 namespace CustomJSONData.HarmonyPatches
 {
-    [HarmonyPatch(typeof(BeatmapDataStaticLightsTransform), "CreateTransformedData")]
-    class BeatmapDataStaticLightsTransformCreateTransformedData
+    [HarmonyPatch(typeof(BeatmapDataStaticLightsTransform))]
+    [HarmonyPatch("CreateTransformedData")]
+    internal class BeatmapDataStaticLightsTransformCreateTransformedData
     {
-        static bool Prefix(BeatmapData beatmapData, ref BeatmapData __result)
+        private static void Postfix(ref BeatmapData __result, BeatmapData beatmapData)
         {
-            BeatmapEventData[] beatmapEventData = beatmapData.beatmapEventData;
-            List<BeatmapEventData> list = new List<BeatmapEventData>(beatmapEventData.Length);
-            list.Add(new BeatmapEventData(0f, BeatmapEventType.Event0, 1));
-            list.Add(new BeatmapEventData(0f, BeatmapEventType.Event4, 1));
-            foreach (BeatmapEventData beatmapEventData2 in beatmapEventData)
-            {
-                if (beatmapEventData2.type.IsRotationEvent())
-                {
-                    list.Add(beatmapEventData2);
-                }
-            }
-
-            if (beatmapData is CustomBeatmapData customBeatmap)
-                __result = new CustomBeatmapData(beatmapData.GetBeatmapLineDataCopy(), list.ToArray(), customBeatmap.customEventData, customBeatmap.beatmapCustomData, customBeatmap.levelCustomData);
-            else
-                __result = new BeatmapData(beatmapData.GetBeatmapLineDataCopy(), list.ToArray());
-            return false;
+            PostfixHelper(ref __result, beatmapData);
         }
     }
 }

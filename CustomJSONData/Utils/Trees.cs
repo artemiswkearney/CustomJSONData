@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using TreeType = System.Dynamic.ExpandoObject;
-using TreeDict = System.Collections.Generic.IDictionary<string, object>;
 using System.Runtime.CompilerServices;
+using TreeDict = System.Collections.Generic.IDictionary<string, object>;
+using TreeType = System.Dynamic.ExpandoObject;
 
 namespace CustomJSONData
 {
@@ -15,9 +12,9 @@ namespace CustomJSONData
     /// - Implements all the features of the ExpandoObject class that would be visible to standard C# code (notably including implementation of<see cref="IDictionary{string, object}"/>).
     /// - No members of a Tree will be Trees with the original Tree as a member.
     /// - All Trees will be of the same underlying type; however, the actual type used is an implementation detail and should not be relied upon.
-    /// 
-    /// Note that calling many of the functions in this class on invalid Trees (those that contain themselves directly or indirectly) is undefined behavior, and may lead to infinite loops 
-    /// or stack overflows. To avoid inadvertently creating invalid Trees, we recommend never adding a subtree to a Tree that's not newly created, although validating defensively with 
+    ///
+    /// Note that calling many of the functions in this class on invalid Trees (those that contain themselves directly or indirectly) is undefined behavior, and may lead to infinite loops
+    /// or stack overflows. To avoid inadvertently creating invalid Trees, we recommend never adding a subtree to a Tree that's not newly created, although validating defensively with
     /// <see cref="isTree(object)"/> is also an option.
     /// </summary>
     public static class Trees
@@ -36,7 +33,7 @@ namespace CustomJSONData
         public static dynamic Tree(List<KeyValuePair<string, object>> contents)
         {
             TreeDict t = (TreeDict)Tree();
-            foreach(var p in contents)
+            foreach (var p in contents)
             {
                 t[p.Key] = p.Value;
             }
@@ -51,7 +48,7 @@ namespace CustomJSONData
         public static dynamic copy(TreeType t)
         {
             dynamic result = Tree();
-            foreach(var p in t)
+            foreach (var p in t)
             {
                 (result as TreeDict)[p.Key] = p.Value is TreeType ? copy(p.Value as TreeType) : p.Value;
             }
@@ -258,78 +255,6 @@ namespace CustomJSONData
         }
 
         /// <summary>
-        /// Safely accesses a member of a tree that represents a <see cref="UnityEngine.Vector3"/>, returning null if the member does not exist or if <paramref name="tree"/> is null.
-        /// The tree member should be formatted in JSON as an array of three numbers.
-        /// Use <see cref="get{T}(object, string, T)"/> unless the member you're getting represents a Vector3.
-        /// </summary>
-        /// <param name="tree">The tree to access a member of</param>
-        /// <param name="memberName">The name of the member to be accessed</param>
-        /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/> interpreted as a <see cref="UnityEngine.Vector3"/>, or null if tree is null or no such member exists</returns>
-        public static UnityEngine.Vector3? getVector3(object tree, string memberName)
-        {
-            return get<List<object>>(tree, memberName)?.toVector3();
-        }
-
-        /// <summary>
-        /// Safely accesses a member of a tree that represents a <see cref="UnityEngine.Vector3"/>, returning <paramref name="defaultValue"/> if the member does not exist or if <paramref name="tree"/> is null.
-        /// The tree member should be formatted in JSON as an array of three numbers.
-        /// Use <see cref="get{T}(object, string, T)"/> unless the member you're getting represents a Vector3.
-        /// </summary>
-        /// <param name="tree">The tree to access a member of</param>
-        /// <param name="memberName">The name of the member to be accessed</param>
-        /// <param name="defaultValue">The value to return if tree is null or has no member <paramref name="memberName"/></param>
-        /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/> interpreted as a <see cref="UnityEngine.Vector3"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
-        public static UnityEngine.Vector3 getVector3(object tree, string memberName, UnityEngine.Vector3 defaultValue)
-        {
-            return getVector3(tree, memberName) ?? defaultValue;
-        }
-
-        /// <summary>
-        /// Safely accesses a member of a tree that represents a <see cref="UnityEngine.Vector4"/>, returning null if the member does not exist or if <paramref name="tree"/> is null.
-        /// The tree member should be formatted in JSON as an array of four numbers.
-        /// Use <see cref="get{T}(object, string, T)"/> unless the member you're getting represents a Vector4.
-        /// </summary>
-        /// <param name="tree">The tree to access a member of</param>
-        /// <param name="memberName">The name of the member to be accessed</param>
-        /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/> interpreted as a <see cref="UnityEngine.Vector4"/>, or null if tree is null or no such member exists</returns>
-        public static UnityEngine.Vector4? getVector4(object tree, string memberName)
-        {
-            return get<List<object>>(tree, memberName)?.toVector4();
-        }
-
-        /// <summary>
-        /// Safely accesses a member of a tree that represents a <see cref="UnityEngine.Vector4"/>, returning <paramref name="defaultValue"/> if the member does not exist or if <paramref name="tree"/> is null.
-        /// The tree member should be formatted in JSON as an array of four numbers.
-        /// Use <see cref="get{T}(object, string, T)"/> unless the member you're getting represents a Vector4.
-        /// </summary>
-        /// <param name="tree">The tree to access a member of</param>
-        /// <param name="memberName">The name of the member to be accessed</param>
-        /// <param name="defaultValue">The value to return if tree is null or has no member <paramref name="memberName"/></param>
-        /// <returns>The value of <paramref name="tree"/>'s member <paramref name="memberName"/> interpreted as a <see cref="UnityEngine.Vector4"/>, or <paramref name="defaultValue"/> if tree is null or no such member exists</returns>
-        public static UnityEngine.Vector3 getVector4(object tree, string memberName, UnityEngine.Vector4 defaultValue)
-        {
-            return getVector4(tree, memberName) ?? defaultValue;
-        }
-
-        /// <summary>
-        /// Evaluates <paramref name="func"/> and returns its result. If <paramref name="func"/> throws an exception, returns null instead.
-        /// </summary>
-        /// <param name="func">The function to be evaluated.</param>
-        /// <returns></returns>
-        public static dynamic tryNull(Func<dynamic> func)
-        {
-            try { return func(); } catch { return null; }
-        }
-
-
-        /// <summary>
-        /// An alternate name for <see cref="tryNull(Func{dynamic})"/>
-        /// </summary>
-        /// <seealso cref="tryNull(Func{dynamic})"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static dynamic TryNull(Func<dynamic> func) => tryNull(func);
-
-        /// <summary>
         /// Combines the contents of the two trees, recursively merging subtrees where appropriate.
         /// When both Trees contain members of the same name:
         /// - If that member is of the same underlying type as a Tree on both arguments, those Trees will be merged with the same priorities as the Trees they were members of.
@@ -339,7 +264,7 @@ namespace CustomJSONData
         /// </summary>
         /// <param name="highPriority">The Tree to keep the members of in case of conflict</param>
         /// <param name="lowPriority">The Tree to drop the members of in case of conflict</param>
-        /// <param name="copySubtrees">If true, all Trees encountered as members in only one of highPriority and lowPriority will be copied as with copy(Tree) rather than copied by reference. 
+        /// <param name="copySubtrees">If true, all Trees encountered as members in only one of highPriority and lowPriority will be copied as with copy(Tree) rather than copied by reference.
         /// Increases performance cost by the cost of those copies.</param>
         /// <returns>A tree consisting of highPriority and lowPriority merged</returns>
         public static dynamic mergeTrees(TreeType highPriority, TreeType lowPriority, bool copySubtrees = true)
@@ -347,7 +272,7 @@ namespace CustomJSONData
             if (highPriority == null) return lowPriority;
             if (lowPriority == null) return highPriority;
             dynamic result = copySubtrees ? copy(lowPriority) : shallowCopy(lowPriority);
-            foreach(KeyValuePair<string, object> pair in highPriority)
+            foreach (KeyValuePair<string, object> pair in highPriority)
             {
                 if (pair.Value is TreeType)
                 {
@@ -416,7 +341,7 @@ namespace CustomJSONData
                     treeKeys.Add(pair.Key);
                 }
             }
-            foreach(var key in treeKeys)
+            foreach (var key in treeKeys)
             {
                 ((TreeDict)newTree)[key] = map(((TreeDict)newTree)[key] as TreeType, func, false);
             }
@@ -448,7 +373,7 @@ namespace CustomJSONData
         public static bool IsTreeType(object o) => isTreeType(o);
 
         /// <summary>
-        /// Checks whether an object is a valid Tree. (Valid Trees are all of the same underlying type, and do not contain themselves directly or indirectly.) This involves recursively validating 
+        /// Checks whether an object is a valid Tree. (Valid Trees are all of the same underlying type, and do not contain themselves directly or indirectly.) This involves recursively validating
         /// all subtrees; if performance is critical, consider whether <see cref="isTreeType(object)"/> suits your needs better.
         /// </summary>
         /// <param name="o">The object to validate.</param>
@@ -482,55 +407,5 @@ namespace CustomJSONData
         /// <seealso cref="isTree(object)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsTree(object o) => isTree(o);
-
-        /// <summary>
-        /// Converts an array of 3 doubles to a Vector3. Would be useful for loading Vector3s from Trees, if JSON arrays were C# arrays.
-        /// </summary>
-        /// <param name="array"></param>
-        /// <returns></returns>
-        public static UnityEngine.Vector3? toVector3(this double[] array)
-        {
-            if (array != null && array.Length >= 3)
-            {
-                return new UnityEngine.Vector3((float)array[0], (float)array[1], (float)array[2]);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Converts a <see cref="List{Object}"/> of 3 simple numerics to a Vector3. Useful for loading Vector3s from Trees.
-        /// </summary>
-        /// <param name="array"></param>
-        /// <returns></returns>
-        public static UnityEngine.Vector3? toVector3(this List<object> list)
-        {
-            if (list != null && list.Count >= 3)
-            {
-                float? x = tryNull(() => Convert.ToSingle(list[0]));
-                float? y = tryNull(() => Convert.ToSingle(list[1]));
-                float? z = tryNull(() => Convert.ToSingle(list[2]));
-                if (x != null && y != null && z != null)
-                    return new UnityEngine.Vector3(x.Value, y.Value, z.Value);
-            }
-            return null;
-        }
-        /// <summary>
-        /// Converts a <see cref="List{Object}"/> of 4 simple numerics to a Vector4. Useful for loading Vector4s from Trees.
-        /// </summary>
-        /// <param name="array"></param>
-        /// <returns></returns>
-        public static UnityEngine.Vector4? toVector4(this List<object> list)
-        {
-            if (list != null && list.Count >= 3)
-            {
-                float? x = tryNull(() => Convert.ToSingle(list[0]));
-                float? y = tryNull(() => Convert.ToSingle(list[1]));
-                float? z = tryNull(() => Convert.ToSingle(list[2]));
-                float? w = tryNull(() => Convert.ToSingle(list[3]));
-                if (x != null && y != null && z != null && w != null)
-                    return new UnityEngine.Vector4(x.Value, y.Value, z.Value, w.Value);
-            }
-            return null;
-        }
     }
 }

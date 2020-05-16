@@ -1,24 +1,19 @@
 ﻿using HarmonyLib;
 using IPA;
-using IPA.Logging;
-using System.Collections.Generic;
 using System.Reflection;
-using UnityEngine.SceneManagement;
+using IPALogger = IPA.Logging.Logger;
 
 namespace CustomJSONData
 {
     [Plugin(RuntimeOptions.SingleStartInit)]
     public class Plugin
     {
-        public static readonly List<string> licenses = new List<string>()
-        {
-        };
-        public static Logger logger;
         [Init]
-        public void Init(Logger l)
+        public void Init(IPALogger l)
         {
-            logger = l;
+            Logger.logger = l;
         }
+
         [OnStart]
         public void OnApplicationStart()
         {

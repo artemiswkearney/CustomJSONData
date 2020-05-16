@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CustomJSONData.CustomBeatmap
+﻿namespace CustomJSONData.CustomBeatmap
 {
     public class CustomObstacleData : ObstacleData
     {
@@ -12,7 +6,9 @@ namespace CustomJSONData.CustomBeatmap
         {
             this.customData = customData;
         }
+
         public dynamic customData;
+
         public override BeatmapObjectData GetCopy()
         {
             return new CustomObstacleData(id, time, lineIndex, obstacleType, duration, width, Trees.copy(customData));
