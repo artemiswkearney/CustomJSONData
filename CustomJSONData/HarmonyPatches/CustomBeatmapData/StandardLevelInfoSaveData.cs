@@ -11,8 +11,8 @@ namespace CustomJSONData.HarmonyPatches
     [HarmonyPatch("DeserializeFromJSONString")]
     internal class StandardLevelInfoSaveDataDeserializeFromJSONString
     {
-        private static readonly MethodInfo CustomDeserialize = SymbolExtensions.GetMethodInfo(() => CustomLevelInfoSaveData.DeserializeFromJSONString(null, null));
-        private static readonly MethodInfo FromJson = SymbolExtensions.GetMethodInfo(() => UnityEngine.JsonUtility.FromJson<StandardLevelInfoSaveData>(null));
+        private static readonly MethodInfo _customDeserialize = SymbolExtensions.GetMethodInfo(() => CustomLevelInfoSaveData.DeserializeFromJSONString(null, null));
+        private static readonly MethodInfo _fromJson = SymbolExtensions.GetMethodInfo(() => UnityEngine.JsonUtility.FromJson<StandardLevelInfoSaveData>(null));
 
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
@@ -23,10 +23,10 @@ namespace CustomJSONData.HarmonyPatches
             {
                 if (!foundDeserialize &&
                     instructionList[i].opcode == OpCodes.Call &&
-                    instructionList[i].operand == FromJson)
+                    instructionList[i].operand == _fromJson)
                 {
                     foundDeserialize = true;
-                    instructionList.Insert(i + 1, new CodeInstruction(OpCodes.Call, CustomDeserialize));
+                    instructionList.Insert(i + 1, new CodeInstruction(OpCodes.Call, _customDeserialize));
                     instructionList.Insert(i, new CodeInstruction(OpCodes.Ldarg_0));
                 }
             }

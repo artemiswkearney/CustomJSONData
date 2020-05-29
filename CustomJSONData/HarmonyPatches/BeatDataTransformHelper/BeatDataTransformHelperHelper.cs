@@ -19,8 +19,8 @@ namespace CustomJSONData.HarmonyPatches
             }
         }
 
-        private static readonly MethodInfo LineIndexGetter = typeof(BeatmapObjectData).GetProperty("lineIndex").GetGetMethod();
-        private static readonly MethodInfo ClampMethod = SymbolExtensions.GetMethodInfo(() => ClampLineIndex(0));
+        private static readonly MethodInfo _lineIndexGetter = typeof(BeatmapObjectData).GetProperty("lineIndex").GetGetMethod();
+        private static readonly MethodInfo _clampLineIndex = SymbolExtensions.GetMethodInfo(() => ClampLineIndex(0));
 
         internal static IEnumerable<CodeInstruction> TranspilerHelper(IEnumerable<CodeInstruction> instructions)
         {
@@ -30,10 +30,10 @@ namespace CustomJSONData.HarmonyPatches
             for (int i = 0; i < instructionList.Count; i++)
             {
                 if (instructionList[i].opcode == OpCodes.Callvirt &&
-                    instructionList[i].operand == LineIndexGetter)
+                    instructionList[i].operand == _clampLineIndex)
                 {
                     foundGetter = true;
-                    instructionList.Insert(i + 1, new CodeInstruction(OpCodes.Call, ClampMethod));
+                    instructionList.Insert(i + 1, new CodeInstruction(OpCodes.Call, _clampLineIndex));
                 }
             }
 #pragma warning restore CS0252
