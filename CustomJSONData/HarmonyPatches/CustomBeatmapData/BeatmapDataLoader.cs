@@ -14,7 +14,7 @@ namespace CustomJSONData.HarmonyPatches
     [HarmonyPatch("GetBeatmapDataFromBeatmapSaveData")]
     internal class BeatmapDataLoaderGetBeatmapDataFromBeatmapSaveData
     {
-        internal static List<CustomBeatmapSaveData.CustomEventData> customEventsSaveData;
+        internal static CustomBeatmapSaveData customBeatmapSaveData;
 
         private static readonly ConstructorInfo _noteDataCtor = typeof(NoteData).GetConstructors().First();
         private static readonly ConstructorInfo _customNoteDataCtor = typeof(CustomNoteData).GetConstructors().First();
@@ -117,6 +117,7 @@ namespace CustomJSONData.HarmonyPatches
         private static BeatmapData InjectCustomData(BeatmapLineData[] beatmapLineData, BeatmapEventData[] beatmapEventData,
             BeatmapDataLoader beatmapDataLoader, dynamic RawBPMChanges, float shuffle, float shufflePeriod)
         {
+            List<CustomBeatmapSaveData.CustomEventData> customEventsSaveData = customBeatmapSaveData.customEvents;
             List<CustomEventData> customEvents = new List<CustomEventData>(customEventsSaveData.Count);
             foreach (CustomBeatmapSaveData.CustomEventData customEventData in customEventsSaveData)
             {
@@ -146,7 +147,7 @@ namespace CustomJSONData.HarmonyPatches
 
                 customEvents.Add(new CustomEventData(realTime, customEventData.type, customEventData.data ?? Tree()));
             }
-            return new CustomBeatmapData(beatmapLineData, beatmapEventData, customEvents.ToArray(), Tree(), Tree());
+            return new CustomBeatmapData(beatmapLineData, beatmapEventData, customEvents.ToArray(), customBeatmapSaveData.customData, Tree(), Tree());
         }
 
         private struct BPMChangeData
@@ -197,7 +198,7 @@ namespace CustomJSONData.HarmonyPatches
         private static void StoreCustomEventsSaveData(BeatmapSaveData beatmapSaveData)
         {
             if (beatmapSaveData is CustomBeatmapSaveData customBeatmapSaveData)
-                BeatmapDataLoaderGetBeatmapDataFromBeatmapSaveData.customEventsSaveData = customBeatmapSaveData.customEvents;
+                BeatmapDataLoaderGetBeatmapDataFromBeatmapSaveData.customBeatmapSaveData = customBeatmapSaveData;
         }
     }
 }

@@ -15,9 +15,30 @@ namespace CustomJSONData.CustomBeatmap
         [JsonIgnore]
         public List<CustomEventData> customEvents { get; protected set; } = new List<CustomEventData>();
 
+        [JsonIgnore]
+        public dynamic customData { get; protected set; }
+
+        [Serializable]
+        private class CustomEventsSaveData
+        {
+#pragma warning disable 0649
+            [JsonProperty]
+            public CustomData _customData;
+
+            [Serializable]
+            public class CustomData
+            {
+                [JsonProperty]
+                public List<CustomEventData> _customEvents;
+            }
+#pragma warning restore 0649
+        }
+
         public new static CustomBeatmapSaveData DeserializeFromJSONString(string stringData)
         {
             CustomBeatmapSaveData beatmap = JsonConvert.DeserializeObject<CustomBeatmapSaveData>(stringData, new ExpandoObjectConverter());
+            CustomEventsSaveData customEvents = JsonConvert.DeserializeObject<CustomEventsSaveData>(stringData);
+            if (customEvents._customData._customEvents != null) beatmap.customEvents = customEvents._customData._customEvents;
             return beatmap;
         }
 
@@ -36,19 +57,11 @@ namespace CustomJSONData.CustomBeatmap
         }
 
         [JsonProperty]
-        protected CustomData _customData
+        [JsonConverter(typeof(ExpandoObjectConverter))]
+        protected dynamic _customData
         {
-            set
-            {
-                if (value._customEvents != null) customEvents = value._customEvents;
-            }
-        }
-
-        [Serializable]
-        protected class CustomData
-        {
-            [JsonProperty]
-            public List<CustomEventData> _customEvents;
+            get => customData;
+            set => customData = value;
         }
 
         [JsonProperty]

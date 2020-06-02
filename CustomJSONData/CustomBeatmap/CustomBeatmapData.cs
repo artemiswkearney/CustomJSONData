@@ -5,14 +5,16 @@ namespace CustomJSONData.CustomBeatmap
     public class CustomBeatmapData : BeatmapData
     {
         public CustomEventData[] customEventData { get; internal set; }
+        public dynamic customData { get; internal set; }
         public dynamic beatmapCustomData { get; internal set; }
         public dynamic levelCustomData { get; internal set; }
 
-        public CustomBeatmapData(BeatmapLineData[] beatmapLinesData, BeatmapEventData[] beatmapEventData, CustomEventData[] customEventData, dynamic customData, dynamic levelCustomData)
+        public CustomBeatmapData(BeatmapLineData[] beatmapLinesData, BeatmapEventData[] beatmapEventData, CustomEventData[] customEventData, dynamic customData, dynamic beatmapCustomData, dynamic levelCustomData)
                           : base(beatmapLinesData, beatmapEventData)
         {
+            this.customData = customData;
             this.customEventData = customEventData;
-            this.beatmapCustomData = customData;
+            this.beatmapCustomData = beatmapCustomData;
             this.levelCustomData = levelCustomData;
         }
 
@@ -21,7 +23,7 @@ namespace CustomJSONData.CustomBeatmap
             BeatmapLineData[] beatmapLineDataCopy = GetBeatmapLineDataCopy();
             BeatmapEventData[] beatmapEventDataCopy = GetBeatmapEventDataCopy();
             CustomEventData[] customEventDataCopy = GetCustomEventDataCopy();
-            return new CustomBeatmapData(beatmapLineDataCopy, beatmapEventDataCopy, customEventDataCopy, copy(beatmapCustomData), copy(levelCustomData));
+            return new CustomBeatmapData(beatmapLineDataCopy, beatmapEventDataCopy, customEventDataCopy, copy(customData), copy(beatmapCustomData), copy(levelCustomData));
         }
 
         private CustomEventData[] GetCustomEventDataCopy()

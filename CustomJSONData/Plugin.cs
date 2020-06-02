@@ -17,7 +17,7 @@ namespace CustomJSONData
         [OnStart]
         public void OnApplicationStart()
         {
-            var harmony = new Harmony("com.arti.BeatSaber.CustomJSONData");
+            var harmony = new Harmony("com.noodle.BeatSaber.CustomJSONData");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
     }

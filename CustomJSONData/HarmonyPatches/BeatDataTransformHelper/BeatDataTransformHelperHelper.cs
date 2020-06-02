@@ -15,7 +15,7 @@ namespace CustomJSONData.HarmonyPatches
             if (beatmapData is CustomBeatmapData customBeatmapData)
             {
                 __result = new CustomBeatmapData(__result.beatmapLinesData, __result.beatmapEventData,
-                    customBeatmapData.customEventData, customBeatmapData.beatmapCustomData, customBeatmapData.levelCustomData);
+                    customBeatmapData.customEventData, customBeatmapData.customData, customBeatmapData.beatmapCustomData, customBeatmapData.levelCustomData);
             }
         }
 
