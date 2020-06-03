@@ -30,7 +30,7 @@ namespace CustomJSONData.HarmonyPatches
             for (int i = 0; i < instructionList.Count; i++)
             {
                 if (instructionList[i].opcode == OpCodes.Callvirt &&
-                    instructionList[i].operand == _clampLineIndex)
+                    instructionList[i].operand == _lineIndexGetter)
                 {
                     foundGetter = true;
                     instructionList.Insert(i + 1, new CodeInstruction(OpCodes.Call, _clampLineIndex));
