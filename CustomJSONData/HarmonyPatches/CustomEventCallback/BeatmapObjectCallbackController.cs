@@ -11,4 +11,14 @@ namespace CustomJSONData.HarmonyPatches
             __instance.gameObject.AddComponent<CustomEventCallbackController>()._beatmapObjectCallbackController = __instance;
         }
     }
+
+    [HarmonyPatch(typeof(BeatmapObjectCallbackController))]
+    [HarmonyPatch("SetNewBeatmapData")]
+    internal class BeatmapObjectCallbackControllerSetNewBeatmapData
+    {
+        private static void Postfix(BeatmapObjectCallbackController __instance, BeatmapData beatmapData)
+        {
+            __instance.GetComponent<CustomEventCallbackController>()?.SetNewBeatmapData(beatmapData);
+        }
+    }
 }

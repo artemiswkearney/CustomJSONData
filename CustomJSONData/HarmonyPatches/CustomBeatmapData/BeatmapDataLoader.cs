@@ -147,7 +147,19 @@ namespace CustomJSONData.HarmonyPatches
 
                 customEvents.Add(new CustomEventData(realTime, customEventData.type, customEventData.data ?? Tree()));
             }
-            return new CustomBeatmapData(beatmapLineData, beatmapEventData, customEvents.ToArray(), customBeatmapSaveData.customData, Tree(), Tree());
+            customEvents.Sort((CustomEventData x, CustomEventData y) =>
+            {
+                if (x.time == y.time)
+                {
+                    return 0;
+                }
+                if (x.time <= y.time)
+                {
+                    return -1;
+                }
+                return 1;
+            });
+            return new CustomBeatmapData(beatmapLineData, beatmapEventData, customEvents.ToArray(), customBeatmapSaveData.customData ?? Tree(), Tree(), Tree());
         }
 
         private struct BPMChangeData

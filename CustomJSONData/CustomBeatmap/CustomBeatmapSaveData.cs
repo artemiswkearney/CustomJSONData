@@ -38,7 +38,7 @@ namespace CustomJSONData.CustomBeatmap
         {
             CustomBeatmapSaveData beatmap = JsonConvert.DeserializeObject<CustomBeatmapSaveData>(stringData, new ExpandoObjectConverter());
             CustomEventsSaveData customEvents = JsonConvert.DeserializeObject<CustomEventsSaveData>(stringData);
-            if (customEvents._customData._customEvents != null) beatmap.customEvents = customEvents._customData._customEvents;
+            if (customEvents._customData != null && customEvents._customData._customEvents != null) beatmap.customEvents = customEvents._customData._customEvents;
             return beatmap;
         }
 

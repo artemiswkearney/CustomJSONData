@@ -1,12 +1,21 @@
 ﻿using CustomJSONData.CustomBeatmap;
 using IPA.Utilities;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace CustomJSONData
 {
     public class CustomEventCallbackController : MonoBehaviour
     {
+        public static event Action<CustomEventCallbackController> customEventCallbackControllerInit;
+
+        private void Start()
+        {
+            customEventCallbackControllerInit?.Invoke(this);
+        }
+
         private void LateUpdate()
         {
             if (_beatmapObjectCallbackController.enabled && _beatmapData is CustomBeatmapData customBeatmapData)
@@ -28,16 +37,24 @@ namespace CustomJSONData
             }
         }
 
-        public virtual CustomEventCallbackData AddCustomEventCallback(CustomEventCallback callback, float aheadTime, bool callIfBeforeStartTime = true)
+        public CustomEventCallbackData AddCustomEventCallback(CustomEventCallback callback, float aheadTime = 0, bool callIfBeforeStartTime = true)
         {
             CustomEventCallbackData customEventCallbackData = new CustomEventCallbackData(callback, aheadTime, callIfBeforeStartTime);
             _customEventCallbackData.Add(customEventCallbackData);
             return customEventCallbackData;
         }
 
-        public virtual void RemoveBeatmapEventCallback(CustomEventCallbackData callbackData)
+        public void RemoveBeatmapEventCallback(CustomEventCallbackData callbackData)
         {
             _customEventCallbackData?.Remove(callbackData);
+        }
+
+        internal void SetNewBeatmapData(BeatmapData beatmapData)
+        {
+            foreach (CustomEventCallbackData customEventCallbackData in _customEventCallbackData)
+            {
+                customEventCallbackData.nextEventIndex = 0;
+            }
         }
 
         private List<CustomEventCallbackData> _customEventCallbackData = new List<CustomEventCallbackData>();
@@ -64,8 +81,8 @@ namespace CustomJSONData
         private static readonly FieldAccessor<BeatmapObjectCallbackController, BeatmapData>.Accessor _beatmapDataAccessor = FieldAccessor<BeatmapObjectCallbackController, BeatmapData>.GetAccessor("_beatmapData");
         private static readonly FieldAccessor<BeatmapObjectCallbackController, IAudioTimeSource>.Accessor _audioTimeSourceAccessor = FieldAccessor<BeatmapObjectCallbackController, IAudioTimeSource>.GetAccessor("_audioTimeSource");
         private static readonly FieldAccessor<BeatmapObjectCallbackController, float>.Accessor _spawningStartTimeAccessor = FieldAccessor<BeatmapObjectCallbackController, float>.GetAccessor("_spawningStartTime");
-        private BeatmapData _beatmapData { get => _beatmapDataAccessor(ref _beatmapObjectCallbackController); }
-        private IAudioTimeSource _audioTimeSource { get => _audioTimeSourceAccessor(ref _beatmapObjectCallbackController); }
-        private float _spawningStartTime { get => _spawningStartTimeAccessor(ref _beatmapObjectCallbackController); }
+        public BeatmapData _beatmapData { get => _beatmapDataAccessor(ref _beatmapObjectCallbackController); }
+        public IAudioTimeSource _audioTimeSource { get => _audioTimeSourceAccessor(ref _beatmapObjectCallbackController); }
+        public float _spawningStartTime { get => _spawningStartTimeAccessor(ref _beatmapObjectCallbackController); }
     }
 }
