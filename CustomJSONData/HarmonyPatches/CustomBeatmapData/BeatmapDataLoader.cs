@@ -125,9 +125,7 @@ namespace CustomJSONData.HarmonyPatches
                 float time = customEventData.time;
 
                 // BeatmapDataLoader's BPMChangeData is private so we get to do a crap top of reflection to convert it to our BPMChangeData
-                Type genericList = typeof(List<>);
                 Type BPMChangeData = Type.GetType("BeatmapDataLoader+BPMChangeData,Main");
-                Type constructedType = genericList.MakeGenericType(new Type[] { BPMChangeData });
                 List<BPMChangeData> BPMChanges = new List<BPMChangeData>();
                 foreach (object i in RawBPMChanges as IEnumerable)
                 {

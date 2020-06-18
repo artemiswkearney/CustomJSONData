@@ -22,6 +22,7 @@ namespace CustomJSONData.CustomBeatmap
         private class CustomEventsSaveData
         {
 #pragma warning disable 0649
+
             [JsonProperty]
             public CustomData _customData;
 
@@ -31,6 +32,7 @@ namespace CustomJSONData.CustomBeatmap
                 [JsonProperty]
                 public List<CustomEventData> _customEvents;
             }
+
 #pragma warning restore 0649
         }
 
