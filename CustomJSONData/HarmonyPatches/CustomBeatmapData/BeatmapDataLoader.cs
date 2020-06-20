@@ -145,18 +145,7 @@ namespace CustomJSONData.HarmonyPatches
 
                 customEvents.Add(new CustomEventData(realTime, customEventData.type, customEventData.data ?? Tree()));
             }
-            customEvents.Sort((CustomEventData x, CustomEventData y) =>
-            {
-                if (x.time == y.time)
-                {
-                    return 0;
-                }
-                if (x.time <= y.time)
-                {
-                    return -1;
-                }
-                return 1;
-            });
+            customEvents = customEvents.OrderBy(x => x.time).ToList();
             return new CustomBeatmapData(beatmapLineData, beatmapEventData, customEvents.ToArray(), customBeatmapSaveData.customData ?? Tree(), Tree(), Tree());
         }
 
