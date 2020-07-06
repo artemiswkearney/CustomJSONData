@@ -4,10 +4,10 @@ namespace CustomJSONData.CustomBeatmap
 {
     public class CustomBeatmapData : BeatmapData
     {
-        public CustomEventData[] customEventData { get; internal set; }
-        public dynamic customData { get; internal set; }
-        public dynamic beatmapCustomData { get; internal set; }
-        public dynamic levelCustomData { get; internal set; }
+        public CustomEventData[] customEventData { get; }
+        public dynamic customData { get; }
+        public dynamic beatmapCustomData { get; }
+        public dynamic levelCustomData { get; }
 
         public CustomBeatmapData(BeatmapLineData[] beatmapLinesData, BeatmapEventData[] beatmapEventData, CustomEventData[] customEventData, dynamic customData, dynamic beatmapCustomData, dynamic levelCustomData)
                           : base(beatmapLinesData, beatmapEventData)
