@@ -48,22 +48,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\Refs\0Harmony.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Libs\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="IPA.Loader, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Refs\IPA.Loader.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\IPA\Data\Managed\IPA.Loader.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Main">
-      <HintPath>..\Refs\Main.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\Main.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\Refs\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Libs\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -73,33 +73,39 @@
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Refs\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Refs\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.JSONSerializeModule">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomEventCallbackController.cs" />
     <Compile Include="CustomBeatmap\CustomBeatmapData.cs" />
-    <Compile Include="CustomBeatmap\CustomBeatmapDataLoader.cs" />
     <Compile Include="CustomBeatmap\CustomBeatmapEventData.cs" />
     <Compile Include="CustomBeatmap\CustomBeatmapSaveData.cs" />
     <Compile Include="CustomBeatmap\CustomEventData.cs" />
     <Compile Include="CustomBeatmap\CustomNoteData.cs" />
     <Compile Include="CustomBeatmap\CustomObstacleData.cs" />
     <Compile Include="CustomLevelInfo\CustomLevelInfoSaveData.cs" />
+    <Compile Include="HarmonyPatches\BeatDataTransformHelper\BeatDataTransformHelperHelper.cs" />
     <Compile Include="HarmonyPatches\BeatDataTransformHelper\BeatmapDataStaticLightsTransform.cs" />
     <Compile Include="HarmonyPatches\BeatDataTransformHelper\BeatmapDataObstaclesAndBombsTransformCreateTransformedData.cs" />
     <Compile Include="HarmonyPatches\BeatDataTransformHelper\BeatDataMirrorTransformCreateTransformData.cs" />
-    <Compile Include="HarmonyPatches\BeatmapDataLoaderGetBeatmapDataFromJson.cs" />
-    <Compile Include="HarmonyPatches\CustomLevelLoaderLoadBeatmapDataBeatmapData.cs" />
-    <Compile Include="HarmonyPatches\StandardLevelInfoSaveDataDeserializeFromJSONString.cs" />
+    <Compile Include="HarmonyPatches\CustomBeatmapData\BeatmapDataLoader.cs" />
+    <Compile Include="HarmonyPatches\CustomEventCallback\BeatmapObjectCallbackController.cs" />
+    <Compile Include="HarmonyPatches\CustomBeatmapData\BeatmapSaveData.cs" />
+    <Compile Include="HarmonyPatches\CustomBeatmapData\CustomLevelLoader.cs" />
+    <Compile Include="HarmonyPatches\CustomBeatmapData\StandardLevelInfoSaveData.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\Trees.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -108,19 +114,11 @@
   <ItemGroup>
     <EmbeddedResource Include="icon.png" />
   </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="AfterBuild">
-    <!-- Read BS Install dir from bsinstall.txt -->
-    <ReadLinesFromFile File="$(SolutionDir)bsinstalldir.txt">
-      <Output TaskParameter="Lines" ItemName="BSInstallDirs" />
-    </ReadLinesFromFile>
-    <GetFirstItem Items="@(BSInstallDirs)">
-      <Output TaskParameter="FirstItem" PropertyName="BSInstallDir" />
-    </GetFirstItem>
-    <ItemGroup>
-      <CopySource Include="$(OutputPath)**\*" />
-    </ItemGroup>
-    <Copy SourceFiles="@(CopySource)" DestinationFolder="$(BSInstallDir)Plugins\%(RecursiveDir)">
-    </Copy>
-  </Target>
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetName).dll" "C:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Plugins\$(TargetName).dll"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
