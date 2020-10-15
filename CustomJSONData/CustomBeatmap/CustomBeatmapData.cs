@@ -1,40 +1,75 @@
-﻿using static CustomJSONData.Trees;
-
-namespace CustomJSONData.CustomBeatmap
+﻿namespace CustomJSONData.CustomBeatmap
 {
+    using System.Collections.Generic;
+
     public class CustomBeatmapData : BeatmapData
     {
-        public CustomEventData[] customEventData { get; }
-        public dynamic customData { get; }
-        public dynamic beatmapCustomData { get; }
-        public dynamic levelCustomData { get; }
+        public List<CustomEventData> customEventsData { get; }
+        public dynamic customData { get; private set; }
+        public dynamic beatmapCustomData { get; private set; }
+        public dynamic levelCustomData { get; private set; }
 
-        public CustomBeatmapData(BeatmapLineData[] beatmapLinesData, BeatmapEventData[] beatmapEventData, CustomEventData[] customEventData, dynamic customData, dynamic beatmapCustomData, dynamic levelCustomData)
-                          : base(beatmapLinesData, beatmapEventData)
+        public CustomBeatmapData(int numberOfLines) : base(numberOfLines)
+        {
+            customEventsData = new List<CustomEventData>(200);
+        }
+
+        // In a perfect world, these would be overrides. Instead, we harmony patch
+        internal new CustomBeatmapData GetCopy()
+        {
+            CustomBeatmapData customBeatmapData = new CustomBeatmapData(_beatmapLinesData.Length);
+            CopyBeatmapObjects(this, customBeatmapData);
+            CopyBeatmapEvents(this, customBeatmapData);
+            CopyCustomData(this, customBeatmapData);
+            return customBeatmapData;
+        }
+
+        internal new CustomBeatmapData GetCopyWithoutEvents()
+        {
+            CustomBeatmapData customBeatmapData = new CustomBeatmapData(_beatmapLinesData.Length);
+            CopyBeatmapObjects(this, customBeatmapData);
+            CopyCustomData(this, customBeatmapData);
+            return customBeatmapData;
+        }
+
+        internal new CustomBeatmapData GetCopyWithoutBeatmapObjects()
+        {
+            CustomBeatmapData customBeatmapData = new CustomBeatmapData(_beatmapLinesData.Length);
+            CopyBeatmapEvents(this, customBeatmapData);
+            CopyCustomData(this, customBeatmapData);
+            return customBeatmapData;
+        }
+
+        // The 'src' variable is completely unneccessary because this is an instance method but i'm just matching the base game methods
+        internal void CopyCustomData(CustomBeatmapData src, CustomBeatmapData dst)
+        {
+            foreach (CustomEventData customEventData in src.customEventsData)
+            {
+                dst.AddCustomEventData(customEventData);
+            }
+            dst.SetCustomData(src.customData);
+            dst.SetBeatmapCustomData(src.beatmapCustomData);
+            dst.SetLevelCustomData(src.levelCustomData);
+        }
+
+        internal void AddCustomEventData(CustomEventData customEventData)
+        {
+            customEventsData.Add(customEventData);
+        }
+
+        internal void SetCustomData(dynamic customData)
         {
             this.customData = customData;
-            this.customEventData = customEventData;
+        }
+
+        internal void SetBeatmapCustomData(dynamic beatmapCustomData)
+        {
             this.beatmapCustomData = beatmapCustomData;
+        }
+
+        internal void SetLevelCustomData(dynamic levelCustomData)
+        {
             this.levelCustomData = levelCustomData;
-        }
-
-        public override BeatmapData GetCopy()
-        {
-            BeatmapLineData[] beatmapLineDataCopy = GetBeatmapLineDataCopy();
-            BeatmapEventData[] beatmapEventDataCopy = GetBeatmapEventDataCopy();
-            CustomEventData[] customEventDataCopy = GetCustomEventDataCopy();
-            return new CustomBeatmapData(beatmapLineDataCopy, beatmapEventDataCopy, customEventDataCopy, copy(customData), copy(beatmapCustomData), copy(levelCustomData));
-        }
-
-        private CustomEventData[] GetCustomEventDataCopy()
-        {
-            CustomEventData[] array = new CustomEventData[this.customEventData.Length];
-            for (int i = 0; i < this.customEventData.Length; i++)
-            {
-                CustomEventData customEventData = this.customEventData[i];
-                array[i] = customEventData;
-            }
-            return array;
         }
     }
 }

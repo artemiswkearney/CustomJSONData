@@ -1,15 +1,24 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace CustomJSONData.CustomBeatmap
+﻿namespace CustomJSONData.CustomBeatmap
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
+
     public class CustomBeatmapSaveData : BeatmapSaveData
     {
-        public CustomBeatmapSaveData(List<BeatmapSaveData.EventData> events, List<BeatmapSaveData.NoteData> notes, List<BeatmapSaveData.ObstacleData> obstacles) : base(events, notes, obstacles)
+        public CustomBeatmapSaveData(List<BeatmapSaveData.EventData> events, List<BeatmapSaveData.NoteData> notes,
+            List<BeatmapSaveData.LongNoteData> longNotes, List<BeatmapSaveData.ObstacleData> obstacles) : base(events, notes, longNotes, obstacles)
         {
+            // Default values for these fields
+            // We deserialize using NullValueHandling.Ignore so that these fields do not get overwritten if they are missing in the json string
+            _version = string.Empty;
+            _customData = Trees.Tree();
+            _events = new List<EventData>();
+            _longNotes = new List<LongNoteData>();
+            _notes = new List<NoteData>();
+            _obstacles = new List<ObstacleData>();
         }
 
         [JsonIgnore]
@@ -38,9 +47,19 @@ namespace CustomJSONData.CustomBeatmap
 
         public new static CustomBeatmapSaveData DeserializeFromJSONString(string stringData)
         {
-            CustomBeatmapSaveData beatmap = JsonConvert.DeserializeObject<CustomBeatmapSaveData>(stringData, new ExpandoObjectConverter());
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                Converters = new List<JsonConverter>() { new ExpandoObjectConverter() }
+            };
+            CustomBeatmapSaveData beatmap = JsonConvert.DeserializeObject<CustomBeatmapSaveData>(stringData, settings);
+
             CustomEventsSaveData customEvents = JsonConvert.DeserializeObject<CustomEventsSaveData>(stringData);
-            if (customEvents._customData != null && customEvents._customData._customEvents != null) beatmap.customEvents = customEvents._customData._customEvents;
+            if (customEvents._customData != null && customEvents._customData._customEvents != null)
+            {
+                beatmap.customEvents = customEvents._customData._customEvents;
+            }
+
             return beatmap;
         }
 
@@ -74,6 +93,13 @@ namespace CustomJSONData.CustomBeatmap
         }
 
         [JsonProperty]
+        protected new List<LongNoteData> _longNotes
+        {
+            get => base._longNotes.Cast<LongNoteData>().ToList();
+            set => base._longNotes = value.Cast<BeatmapSaveData.LongNoteData>().ToList();
+        }
+
+        [JsonProperty]
         protected new List<ObstacleData> _obstacles
         {
             get => base._obstacles.Cast<ObstacleData>().ToList();
@@ -88,10 +114,7 @@ namespace CustomJSONData.CustomBeatmap
             }
 
             [JsonIgnore]
-            public dynamic customData
-            {
-                get => _customData;
-            }
+            public dynamic customData => _customData;
 
             [JsonProperty]
             protected new float _time
@@ -130,22 +153,13 @@ namespace CustomJSONData.CustomBeatmap
             }
 
             [JsonIgnore]
-            public float time
-            {
-                get => _time;
-            }
+            public float time => _time;
 
             [JsonIgnore]
-            public string type
-            {
-                get => _type;
-            }
+            public string type => _type;
 
             [JsonIgnore]
-            public dynamic data
-            {
-                get => _data;
-            }
+            public dynamic data => _data;
 
             public void MoveTime(float offset)
             {
@@ -171,10 +185,7 @@ namespace CustomJSONData.CustomBeatmap
             }
 
             [JsonIgnore]
-            public dynamic customData
-            {
-                get => _customData;
-            }
+            public dynamic customData => _customData;
 
             [JsonProperty]
             protected new float _time
@@ -217,6 +228,64 @@ namespace CustomJSONData.CustomBeatmap
         }
 
         [Serializable]
+        public new class LongNoteData : BeatmapSaveData.LongNoteData
+        {
+            public LongNoteData(float time, int lineIndex, NoteLineLayer lineLayer, LongNoteType type, NoteCutDirection cutDirection, float duration)
+                : base(time, lineIndex, lineLayer, type, cutDirection, duration)
+            {
+            }
+
+            [JsonIgnore]
+            public dynamic customData => _customData;
+
+            [JsonProperty]
+            protected new float _time
+            {
+                get => base._time;
+                set => base._time = value;
+            }
+
+            [JsonProperty]
+            protected new int _lineIndex
+            {
+                get => base._lineIndex;
+                set => base._lineIndex = value;
+            }
+
+            [JsonProperty]
+            protected new NoteLineLayer _lineLayer
+            {
+                get => base._lineLayer;
+                set => base._lineLayer = value;
+            }
+
+            [JsonProperty]
+            protected new LongNoteType _type
+            {
+                get => base._type;
+                set => base._type = value;
+            }
+
+            [JsonProperty]
+            protected new NoteCutDirection _cutDirection
+            {
+                get => base._cutDirection;
+                set => base._cutDirection = value;
+            }
+
+            [JsonProperty]
+            protected new float _duration
+            {
+                get => base._duration;
+                set => base._duration = value;
+            }
+
+            [JsonProperty]
+            [JsonConverter(typeof(ExpandoObjectConverter))]
+            protected dynamic _customData;
+        }
+
+        [Serializable]
         public new class ObstacleData : BeatmapSaveData.ObstacleData
         {
             public ObstacleData(float time, int lineIndex, ObstacleType type, float duration, int width) : base(time, lineIndex, type, duration, width)
@@ -224,10 +293,7 @@ namespace CustomJSONData.CustomBeatmap
             }
 
             [JsonIgnore]
-            public dynamic customData
-            {
-                get => _customData;
-            }
+            public dynamic customData => _customData;
 
             [JsonProperty]
             protected new float _time

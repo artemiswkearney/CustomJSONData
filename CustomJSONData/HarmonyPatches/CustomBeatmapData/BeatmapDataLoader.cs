@@ -1,24 +1,29 @@
-﻿using CustomJSONData.CustomBeatmap;
-using HarmonyLib;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using static CustomJSONData.Trees;
-
-namespace CustomJSONData.HarmonyPatches
+﻿namespace CustomJSONData.HarmonyPatches
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using System.Reflection.Emit;
+    using CustomJSONData.CustomBeatmap;
+    using HarmonyLib;
+    using static CustomJSONData.Trees;
+
     [HarmonyPatch(typeof(BeatmapDataLoader))]
     [HarmonyPatch("GetBeatmapDataFromBeatmapSaveData")]
     internal class BeatmapDataLoaderGetBeatmapDataFromBeatmapSaveData
     {
         internal static CustomBeatmapSaveData customBeatmapSaveData;
 
-        private static readonly ConstructorInfo _noteDataCtor = typeof(NoteData).GetConstructors().First();
-        private static readonly ConstructorInfo _customNoteDataCtor = typeof(CustomNoteData).GetConstructors().First();
+        private static readonly MethodInfo _createBombNoteData = SymbolExtensions.GetMethodInfo(() => NoteData.CreateBombNoteData(0, 0, 0));
+        private static readonly MethodInfo _createBombCustomNoteData = SymbolExtensions.GetMethodInfo(() => CustomNoteData.CreateBombNoteData(0, 0, 0, null));
+        private static readonly MethodInfo _createBasicNoteData = SymbolExtensions.GetMethodInfo(() => NoteData.CreateBasicNoteData(0, 0, 0, 0, 0));
+        private static readonly MethodInfo _createBasicCustomNoteData = SymbolExtensions.GetMethodInfo(() => CustomNoteData.CreateBasicNoteData(0, 0, 0, 0, 0, null));
+        private static readonly MethodInfo _createLongNoteData = SymbolExtensions.GetMethodInfo(() => NoteData.CreateLongNoteData(0, 0, 0, 0, 0, 0));
+        private static readonly MethodInfo _createLongCustomNoteData = SymbolExtensions.GetMethodInfo(() => CustomNoteData.CreateLongNoteData(0, 0, 0, 0, 0, 0, null));
         private static readonly MethodInfo _getNoteCustomData = SymbolExtensions.GetMethodInfo(() => GetNoteCustomData(null));
+        private static readonly MethodInfo _getLongNoteCustomData = SymbolExtensions.GetMethodInfo(() => GetLongNoteCustomData(null));
 
         private static readonly ConstructorInfo _obstacleDataCtor = typeof(ObstacleData).GetConstructors().First();
         private static readonly ConstructorInfo _customObstacleDataCtor = typeof(CustomObstacleData).GetConstructors().First();
@@ -28,59 +33,105 @@ namespace CustomJSONData.HarmonyPatches
         private static readonly ConstructorInfo _customEventDataCtor = typeof(CustomBeatmapEventData).GetConstructors().First();
         private static readonly MethodInfo _getEventCustomData = SymbolExtensions.GetMethodInfo(() => GetEventCustomData(null));
 
-        private static readonly ConstructorInfo _beatmapDataCtor = typeof(BeatmapData).GetConstructors().First();
-        private static readonly MethodInfo _injectCustomData = SymbolExtensions.GetMethodInfo(() => InjectCustomData(null, null, null, null, 0, 0));
+        private static readonly MethodInfo _processRemainingData = typeof(BeatmapData).GetMethod("ProcessRemainingData");
+        private static readonly MethodInfo _createCustomBeatmapData = SymbolExtensions.GetMethodInfo(() => CreateCustomBeatmapData(null, null, 0, 0));
 
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             List<CodeInstruction> instructionList = instructions.ToList();
-            bool foundNoteData = false;
+
+            FieldInfo bpmChangesDataField = null;
+
+            bool foundBombNoteData = false;
+            bool foundBasicNoteData = false;
+            bool foundLongNoteData = false;
             bool foundObstacleData = false;
             bool foundEventData = false;
             bool foundBeatmapData = false;
 #pragma warning disable CS0252
             for (int i = 0; i < instructionList.Count; i++)
             {
-                if (instructionList[i].opcode == OpCodes.Newobj &&
-                    instructionList[i].operand == _noteDataCtor)
+                if (!foundBombNoteData &&
+                    instructionList[i].opcode == OpCodes.Call &&
+                    instructionList[i].operand == _createBombNoteData)
                 {
-                    foundNoteData = true;
-                    instructionList[i].operand = _customNoteDataCtor;
+                    foundBombNoteData = true;
+                    instructionList[i].operand = _createBombCustomNoteData;
                     instructionList.Insert(i, new CodeInstruction(OpCodes.Call, _getNoteCustomData));
-                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 18));
+                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 11));
                 }
-                if (instructionList[i].opcode == OpCodes.Newobj &&
+                if (!foundBasicNoteData &&
+                    instructionList[i].opcode == OpCodes.Call &&
+                    instructionList[i].operand == _createBasicNoteData)
+                {
+                    foundBasicNoteData = true;
+                    instructionList[i].operand = _createBasicCustomNoteData;
+                    instructionList.Insert(i, new CodeInstruction(OpCodes.Call, _getNoteCustomData));
+                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 11));
+                }
+                if (!foundLongNoteData &&
+                    instructionList[i].opcode == OpCodes.Call &&
+                    instructionList[i].operand == _createLongNoteData)
+                {
+                    foundLongNoteData = true;
+                    instructionList[i].operand = _createLongCustomNoteData;
+                    instructionList.Insert(i, new CodeInstruction(OpCodes.Call, _getLongNoteCustomData));
+                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 12));
+                }
+                
+                if (!foundObstacleData &&
+                    instructionList[i].opcode == OpCodes.Newobj &&
                     instructionList[i].operand == _obstacleDataCtor)
                 {
                     foundObstacleData = true;
                     instructionList[i].operand = _customObstacleDataCtor;
                     instructionList.Insert(i, new CodeInstruction(OpCodes.Call, _getObstacleCustomData));
-                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 29));
+                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 13));
                 }
                 if (instructionList[i].opcode == OpCodes.Newobj &&
                     instructionList[i].operand == _eventDataCtor)
                 {
                     instructionList[i].operand = _customEventDataCtor;
                     instructionList.Insert(i, new CodeInstruction(OpCodes.Call, _getEventCustomData));
-                    if (!foundEventData) instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 38));
-                    else instructionList.Insert(i, new CodeInstruction(OpCodes.Ldnull));
+                    if (!foundEventData)
+                    {
+                        instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 20));
+                    }
+                    else
+                    {
+                        instructionList.Insert(i, new CodeInstruction(OpCodes.Ldnull));
+                    }
 
                     foundEventData = true;
                 }
+
+                if (bpmChangesDataField == null &&
+                    instructionList[i].opcode == OpCodes.Stfld &&
+                    ((FieldInfo)instructionList[i].operand).Name == "bpmChangesData")
+                {
+                    bpmChangesDataField = (FieldInfo)instructionList[i].operand;
+                }
                 if (!foundBeatmapData &&
-                    instructionList[i].opcode == OpCodes.Newobj &&
-                    instructionList[i].operand == _beatmapDataCtor)
+                    bpmChangesDataField != null &&
+                    instructionList[i].opcode == OpCodes.Stfld &&
+                    ((FieldInfo)instructionList[i].operand).Name == "bpmChangesDataIdx") // we look for this specifically because it happens after the bpm changes have been loaded
                 {
                     foundBeatmapData = true;
-                    instructionList[i] = new CodeInstruction(OpCodes.Call, _injectCustomData);
-                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldarg_0));
-                    instructionList.Insert(i + 1, new CodeInstruction(OpCodes.Ldloc_2));
-                    instructionList.Insert(i + 2, new CodeInstruction(OpCodes.Ldarg_S, 5));
-                    instructionList.Insert(i + 3, new CodeInstruction(OpCodes.Ldarg_S, 6));
+                    instructionList.Insert(i + 1, new CodeInstruction(OpCodes.Ldarg_0));
+                    instructionList.Insert(i + 2, new CodeInstruction(OpCodes.Ldloc_0));
+                    instructionList.Insert(i + 3, new CodeInstruction(OpCodes.Ldfld, bpmChangesDataField));
+                    instructionList.Insert(i + 4, new CodeInstruction(OpCodes.Ldarg_S, 6));
+                    instructionList.Insert(i + 5, new CodeInstruction(OpCodes.Ldarg_S, 7));
+                    instructionList.Insert(i + 6, new CodeInstruction(OpCodes.Call, _createCustomBeatmapData));
+                    instructionList.Insert(i + 7, new CodeInstruction(OpCodes.Stloc_1));
                 }
             }
 #pragma warning restore CS0252
-            if (!foundNoteData || !foundObstacleData || !foundEventData || !foundBeatmapData) Logger.Log("Failed to patch GetBeatmapDataFromBeatmapSaveData in BeatmapDataLoader!", IPA.Logging.Logger.Level.Error);
+            if (!foundBombNoteData || !foundBasicNoteData || !foundLongNoteData || !foundObstacleData || !foundEventData || !foundBeatmapData)
+            {
+                Logger.Log("Failed to patch GetBeatmapDataFromBeatmapSaveData in BeatmapDataLoader!", IPA.Logging.Logger.Level.Error);
+            }
+
             return instructionList.AsEnumerable();
         }
 
@@ -89,8 +140,26 @@ namespace CustomJSONData.HarmonyPatches
             if (noteSaveData is CustomBeatmapSaveData.NoteData customNoteSaveData)
             {
                 dynamic customData = customNoteSaveData.customData;
-                if (customData != null) return customData;
+                if (customData != null)
+                {
+                    return customData;
+                }
             }
+
+            return Tree();
+        }
+
+        private static dynamic GetLongNoteCustomData(BeatmapSaveData.LongNoteData noteSaveData)
+        {
+            if (noteSaveData is CustomBeatmapSaveData.LongNoteData customNoteSaveData)
+            {
+                dynamic customData = customNoteSaveData.customData;
+                if (customData != null)
+                {
+                    return customData;
+                }
+            }
+
             return Tree();
         }
 
@@ -99,8 +168,12 @@ namespace CustomJSONData.HarmonyPatches
             if (obstacleSaveData is CustomBeatmapSaveData.ObstacleData customObstacleSaveData)
             {
                 dynamic customData = customObstacleSaveData.customData;
-                if (customData != null) return customData;
+                if (customData != null)
+                {
+                    return customData;
+                }
             }
+
             return Tree();
         }
 
@@ -109,44 +182,52 @@ namespace CustomJSONData.HarmonyPatches
             if (eventSaveData is CustomBeatmapSaveData.EventData customEventSaveData)
             {
                 dynamic customData = customEventSaveData.customData;
-                if (customData != null) return customData;
+                if (customData != null)
+                {
+                    return customData;
+                }
             }
+
             return Tree();
         }
 
-        private static BeatmapData InjectCustomData(BeatmapLineData[] beatmapLineData, BeatmapEventData[] beatmapEventData,
-            BeatmapDataLoader beatmapDataLoader, dynamic RawBPMChanges, float shuffle, float shufflePeriod)
+        private static CustomBeatmapData CreateCustomBeatmapData(BeatmapDataLoader beatmapDataLoader, dynamic RawBPMChanges, float shuffle, float shufflePeriod)
         {
             List<CustomBeatmapSaveData.CustomEventData> customEventsSaveData = customBeatmapSaveData.customEvents;
-            List<CustomEventData> customEvents = new List<CustomEventData>(customEventsSaveData.Count);
+            customEventsSaveData = customEventsSaveData.OrderBy(x => x.time).ToList();
+
+            CustomBeatmapData customBeatmapData = new CustomBeatmapData(4);
+
             foreach (CustomBeatmapSaveData.CustomEventData customEventData in customEventsSaveData)
             {
-                int num = 0;
-                float time = customEventData.time;
-
+                Logger.Log(5);
                 // BeatmapDataLoader's BPMChangeData is private so we get to do a crap top of reflection to convert it to our BPMChangeData
-                Type BPMChangeData = Type.GetType("BeatmapDataLoader+BPMChangeData,Main");
+                Type BPMChangeData = Type.GetType("BeatmapDataLoader+BpmChangeData,Main");
                 List<BPMChangeData> BPMChanges = new List<BPMChangeData>();
                 foreach (object i in RawBPMChanges as IEnumerable)
                 {
                     float bpmChangeStartTime = (float)BPMChangeData.GetField("bpmChangeStartTime").GetValue(i);
-                    float bpmChangeStartBPMTime = (float)BPMChangeData.GetField("bpmChangeStartBPMTime").GetValue(i);
+                    float bpmChangeStartBPMTime = (float)BPMChangeData.GetField("bpmChangeStartBpmTime").GetValue(i);
                     float bpm = (float)BPMChangeData.GetField("bpm").GetValue(i);
 
                     BPMChanges.Add(new BPMChangeData(bpmChangeStartTime, bpmChangeStartBPMTime, bpm));
                 }
 
-                while (num < BPMChanges.Count - 1 && BPMChanges[num + 1].bpmChangeStartBPMTime < time)
+                // Same math from BeatmapDataLoader
+                int bpmChangesDataIdx = 0;
+                float time = customEventData.time;
+                while (bpmChangesDataIdx < BPMChanges.Count - 1 && BPMChanges[bpmChangesDataIdx + 1].bpmChangeStartBPMTime < time)
                 {
-                    num++;
+                    bpmChangesDataIdx++;
                 }
-                BPMChangeData bpmchangeData = BPMChanges[num];
+                BPMChangeData bpmchangeData = BPMChanges[bpmChangesDataIdx];
                 float realTime = bpmchangeData.bpmChangeStartTime + beatmapDataLoader.GetRealTimeFromBPMTime(time - bpmchangeData.bpmChangeStartBPMTime, bpmchangeData.bpm, shuffle, shufflePeriod);
 
-                customEvents.Add(new CustomEventData(realTime, customEventData.type, customEventData.data ?? Tree()));
+                customBeatmapData.AddCustomEventData(new CustomEventData(realTime, customEventData.type, customEventData.data ?? Tree()));
             }
-            customEvents = customEvents.OrderBy(x => x.time).ToList();
-            return new CustomBeatmapData(beatmapLineData, beatmapEventData, customEvents.ToArray(), customBeatmapSaveData.customData ?? Tree(), Tree(), Tree());
+            customBeatmapData.SetCustomData(customBeatmapSaveData.customData);
+
+            return customBeatmapData;
         }
 
         private struct BPMChangeData
@@ -185,19 +266,31 @@ namespace CustomJSONData.HarmonyPatches
                     instructionList[i].operand == _getBeatmapData)
                 {
                     foundGetBeatmapData = true;
-                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_3));
+                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 4));
                     instructionList.Insert(i + 1, new CodeInstruction(OpCodes.Call, _storeCustomEventsSaveData));
                 }
             }
 #pragma warning restore CS0252
-            if (!foundGetBeatmapData) Logger.Log("Failed to patch GetBeatmapDataFromJson in BeatmapDataLoader!", IPA.Logging.Logger.Level.Error);
+            if (!foundGetBeatmapData)
+            {
+                Logger.Log("Failed to patch GetBeatmapDataFromJson in BeatmapDataLoader!", IPA.Logging.Logger.Level.Error);
+            }
+
+
+            foreach (CodeInstruction code in instructionList)
+            {
+                Logger.Log(code);
+            }
+
             return instructionList.AsEnumerable();
         }
 
         private static void StoreCustomEventsSaveData(BeatmapSaveData beatmapSaveData)
         {
             if (beatmapSaveData is CustomBeatmapSaveData customBeatmapSaveData)
+            {
                 BeatmapDataLoaderGetBeatmapDataFromBeatmapSaveData.customBeatmapSaveData = customBeatmapSaveData;
+            }
         }
     }
 }

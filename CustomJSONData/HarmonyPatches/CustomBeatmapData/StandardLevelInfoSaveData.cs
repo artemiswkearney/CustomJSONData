@@ -1,12 +1,12 @@
-﻿using CustomJSONData.CustomLevelInfo;
-using HarmonyLib;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-
-namespace CustomJSONData.HarmonyPatches
+﻿namespace CustomJSONData.HarmonyPatches
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using System.Reflection.Emit;
+    using CustomJSONData.CustomLevelInfo;
+    using HarmonyLib;
+
     [HarmonyPatch(typeof(StandardLevelInfoSaveData))]
     [HarmonyPatch("DeserializeFromJSONString")]
     internal class StandardLevelInfoSaveDataDeserializeFromJSONString
@@ -31,7 +31,11 @@ namespace CustomJSONData.HarmonyPatches
                 }
             }
 #pragma warning restore CS0252
-            if (!foundDeserialize) Logger.Log("Failed to patch DeserializeFromJSONString in StandardLevelInfoSaveData!", IPA.Logging.Logger.Level.Error);
+            if (!foundDeserialize)
+            {
+                Logger.Log("Failed to patch DeserializeFromJSONString in StandardLevelInfoSaveData!", IPA.Logging.Logger.Level.Error);
+            }
+
             return instructionList.AsEnumerable();
         }
     }

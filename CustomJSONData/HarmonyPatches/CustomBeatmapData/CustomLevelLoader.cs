@@ -1,10 +1,10 @@
-﻿using CustomJSONData.CustomBeatmap;
-using CustomJSONData.CustomLevelInfo;
-using HarmonyLib;
-using static CustomJSONData.Trees;
-
-namespace CustomJSONData.HarmonyPatches
+﻿namespace CustomJSONData.HarmonyPatches
 {
+    using CustomJSONData.CustomBeatmap;
+    using CustomJSONData.CustomLevelInfo;
+    using HarmonyLib;
+    using static CustomJSONData.Trees;
+
     [HarmonyPatch(typeof(CustomLevelLoader))]
     [HarmonyPatch("LoadBeatmapDataBeatmapData")]
     internal class CustomLevelLoaderLoadBeatmapDataBeatmapData
@@ -13,13 +13,8 @@ namespace CustomJSONData.HarmonyPatches
         {
             if (__result != null && __result is CustomBeatmapData customBeatmapData && standardLevelInfoSaveData is CustomLevelInfoSaveData lisd)
             {
-                __result = new CustomBeatmapData(
-                    __result.beatmapLinesData, 
-                    __result.beatmapEventData, 
-                    customBeatmapData.customEventData,
-                    customBeatmapData.customData,
-                    at(lisd.beatmapCustomDatasByFilename, difficultyFileName) ?? Tree(),
-                    lisd.customData ?? Tree());
+                customBeatmapData.SetBeatmapCustomData(at(lisd.beatmapCustomDatasByFilename, difficultyFileName) ?? Tree());
+                customBeatmapData.SetLevelCustomData(lisd.customData ?? Tree());
             }
         }
     }

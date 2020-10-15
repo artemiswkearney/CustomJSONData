@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using TreeDict = System.Collections.Generic.IDictionary<string, object>;
-using TreeType = System.Dynamic.ExpandoObject;
-
-namespace CustomJSONData
+﻿namespace CustomJSONData
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Runtime.CompilerServices;
+    using TreeDict = System.Collections.Generic.IDictionary<string, object>;
+    using TreeType = System.Dynamic.ExpandoObject;
+
     /// <summary>
     /// Utility functions for creating and manipulating Trees, which are dynamics guaranteed to have the following properties:
     /// - Implements all the features of the ExpandoObject class that would be visible to standard C# code (notably including implementation of<see cref="IDictionary{string, object}"/>).
@@ -33,7 +33,7 @@ namespace CustomJSONData
         public static dynamic Tree(List<KeyValuePair<string, object>> contents)
         {
             TreeDict t = (TreeDict)Tree();
-            foreach (var p in contents)
+            foreach (KeyValuePair<string, object> p in contents)
             {
                 t[p.Key] = p.Value;
             }
@@ -48,7 +48,7 @@ namespace CustomJSONData
         public static dynamic copy(TreeType t)
         {
             dynamic result = Tree();
-            foreach (var p in t)
+            foreach (KeyValuePair<string, object> p in t)
             {
                 (result as TreeDict)[p.Key] = p.Value is TreeType ? copy(p.Value as TreeType) : p.Value;
             }
@@ -306,7 +306,7 @@ namespace CustomJSONData
         public static void map(TreeType tree, Action<dynamic> action)
         {
             action(tree);
-            foreach (var pair in tree)
+            foreach (KeyValuePair<string, object> pair in tree)
             {
                 if (pair.Value is TreeType t)
                 {
@@ -333,15 +333,15 @@ namespace CustomJSONData
         public static dynamic map(TreeType tree, Func<dynamic, dynamic> func, bool doCopy = true)
         {
             TreeType newTree = func(doCopy ? copy(tree) : tree);
-            var treeKeys = new List<string>();
-            foreach (var pair in newTree)
+            List<string> treeKeys = new List<string>();
+            foreach (KeyValuePair<string, object> pair in newTree)
             {
                 if (pair.Value is TreeType)
                 {
                     treeKeys.Add(pair.Key);
                 }
             }
-            foreach (var key in treeKeys)
+            foreach (string key in treeKeys)
             {
                 ((TreeDict)newTree)[key] = map(((TreeDict)newTree)[key] as TreeType, func, false);
             }
@@ -391,7 +391,7 @@ namespace CustomJSONData
                 if (parents.Contains(child)) return false;
 
                 // update accumulator
-                var newSeen = new HashSet<object> { child };
+                HashSet<object> newSeen = new HashSet<object> { child };
                 newSeen.UnionWith(parents);
 
                 // if all subtrees are valid, this tree is valid

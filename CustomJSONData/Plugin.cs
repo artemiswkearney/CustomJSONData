@@ -1,10 +1,10 @@
-﻿using HarmonyLib;
-using IPA;
-using System.Reflection;
-using IPALogger = IPA.Logging.Logger;
-
-namespace CustomJSONData
+﻿namespace CustomJSONData
 {
+    using System.Reflection;
+    using HarmonyLib;
+    using IPA;
+    using IPALogger = IPA.Logging.Logger;
+
     [Plugin(RuntimeOptions.SingleStartInit)]
     public class Plugin
     {
@@ -17,7 +17,7 @@ namespace CustomJSONData
         [OnStart]
         public void OnApplicationStart()
         {
-            var harmony = new Harmony("com.arti.BeatSaber.CustomJSONData");
+            Harmony harmony = new Harmony("com.arti.BeatSaber.CustomJSONData");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
     }

@@ -1,7 +1,7 @@
-﻿using HarmonyLib;
-
-namespace CustomJSONData.HarmonyPatches
+﻿namespace CustomJSONData.HarmonyPatches
 {
+    using HarmonyLib;
+
     [HarmonyPatch(typeof(BeatmapObjectCallbackController))]
     [HarmonyPatch("Start")]
     internal class BeatmapObjectCallbackControllerStart

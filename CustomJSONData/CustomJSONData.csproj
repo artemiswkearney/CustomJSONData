@@ -51,6 +51,9 @@
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Libs\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="BeatmapCore">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\BeatmapCore.dll</HintPath>
+    </Reference>
     <Reference Include="IPA.Loader, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\IPA\Data\Managed\IPA.Loader.dll</HintPath>
@@ -58,7 +61,6 @@
     </Reference>
     <Reference Include="Main">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\Main.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -94,10 +96,8 @@
     <Compile Include="CustomBeatmap\CustomNoteData.cs" />
     <Compile Include="CustomBeatmap\CustomObstacleData.cs" />
     <Compile Include="CustomLevelInfo\CustomLevelInfoSaveData.cs" />
-    <Compile Include="HarmonyPatches\BeatDataTransformHelper\BeatDataTransformHelperHelper.cs" />
-    <Compile Include="HarmonyPatches\BeatDataTransformHelper\BeatmapDataStaticLightsTransform.cs" />
-    <Compile Include="HarmonyPatches\BeatDataTransformHelper\BeatmapDataObstaclesAndBombsTransformCreateTransformedData.cs" />
-    <Compile Include="HarmonyPatches\BeatDataTransformHelper\BeatDataMirrorTransformCreateTransformData.cs" />
+    <Compile Include="HarmonyPatches\BeatmapDataTransformHelper\BeatmapDataMirrorTransformCreateTransformData.cs" />
+    <Compile Include="HarmonyPatches\CustomBeatmapData\BeatmapData.cs" />
     <Compile Include="HarmonyPatches\CustomBeatmapData\BeatmapDataLoader.cs" />
     <Compile Include="HarmonyPatches\CustomEventCallback\BeatmapObjectCallbackController.cs" />
     <Compile Include="HarmonyPatches\CustomBeatmapData\BeatmapSaveData.cs" />

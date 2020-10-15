@@ -1,19 +1,16 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
-using System.Collections.Generic;
-using static CustomJSONData.Trees;
-
-namespace CustomJSONData.CustomLevelInfo
+﻿namespace CustomJSONData.CustomLevelInfo
 {
+    using System;
+    using System.Collections.Generic;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
+    using static CustomJSONData.Trees;
+
     public class CustomLevelInfoSaveData : StandardLevelInfoSaveData
     {
         protected dynamic _customData;
 
-        public dynamic customData
-        {
-            get => _customData;
-        }
+        public dynamic customData => _customData;
 
         public Dictionary<string, dynamic> beatmapCustomDatasByFilename { get; protected set; }
 
@@ -34,11 +31,11 @@ namespace CustomJSONData.CustomLevelInfo
             DifficultyBeatmapSet[] customBeatmapSets = new DifficultyBeatmapSet[standardSaveData.difficultyBeatmapSets.Length];
             for (int i = 0; i < standardSaveData.difficultyBeatmapSets.Length; i++)
             {
-                var standardBeatmapSet = standardSaveData.difficultyBeatmapSets[i];
+                DifficultyBeatmapSet standardBeatmapSet = standardSaveData.difficultyBeatmapSets[i];
                 DifficultyBeatmap[] customBeatmaps = new DifficultyBeatmap[standardBeatmapSet.difficultyBeatmaps.Length];
                 for (int j = 0; j < standardBeatmapSet.difficultyBeatmaps.Length; j++)
                 {
-                    var standardBeatmap = standardBeatmapSet.difficultyBeatmaps[j];
+                    StandardLevelInfoSaveData.DifficultyBeatmap standardBeatmap = standardBeatmapSet.difficultyBeatmaps[j];
                     DifficultyBeatmap customBeatmap = new DifficultyBeatmap(standardBeatmap.difficulty, standardBeatmap.difficultyRank, standardBeatmap.beatmapFilename, standardBeatmap.noteJumpMovementSpeed,
                                                                             standardBeatmap.noteJumpStartBeatOffset, customDatas._difficultyBeatmapSets[i]._difficultyBeatmaps[j]._customData ?? Tree());
                     customBeatmaps[j] = customBeatmap;
@@ -56,10 +53,7 @@ namespace CustomJSONData.CustomLevelInfo
         {
             protected dynamic _customData;
 
-            public dynamic customData
-            {
-                get => _customData;
-            }
+            public dynamic customData => _customData;
 
             public DifficultyBeatmap(string difficultyName, int difficultyRank, string beatmapFilename, float noteJumpMovementSpeed, float noteJumpStartBeatOffset, dynamic customData)
                               : base(difficultyName, difficultyRank, beatmapFilename, noteJumpMovementSpeed, noteJumpStartBeatOffset)

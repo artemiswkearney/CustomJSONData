@@ -1,8 +1,8 @@
-﻿using CustomJSONData.CustomBeatmap;
-using HarmonyLib;
-
-namespace CustomJSONData.HarmonyPatches
+﻿namespace CustomJSONData.HarmonyPatches
 {
+    using CustomJSONData.CustomBeatmap;
+    using HarmonyLib;
+
     [HarmonyPatch(typeof(BeatmapSaveData))]
     [HarmonyPatch("DeserializeFromJSONString")]
     internal class BeatmapSaveDataDeserializeFromJSONString
