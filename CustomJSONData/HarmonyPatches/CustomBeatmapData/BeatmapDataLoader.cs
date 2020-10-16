@@ -200,7 +200,6 @@
 
             foreach (CustomBeatmapSaveData.CustomEventData customEventData in customEventsSaveData)
             {
-                Logger.Log(5);
                 // BeatmapDataLoader's BPMChangeData is private so we get to do a crap top of reflection to convert it to our BPMChangeData
                 Type BPMChangeData = Type.GetType("BeatmapDataLoader+BpmChangeData,Main");
                 List<BPMChangeData> BPMChanges = new List<BPMChangeData>();
@@ -274,12 +273,6 @@
             if (!foundGetBeatmapData)
             {
                 Logger.Log("Failed to patch GetBeatmapDataFromJson in BeatmapDataLoader!", IPA.Logging.Logger.Level.Error);
-            }
-
-
-            foreach (CodeInstruction code in instructionList)
-            {
-                Logger.Log(code);
             }
 
             return instructionList.AsEnumerable();
