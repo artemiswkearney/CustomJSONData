@@ -13,8 +13,7 @@
         {
             if (__result != null && __result is CustomBeatmapData customBeatmapData && standardLevelInfoSaveData is CustomLevelInfoSaveData lisd)
             {
-                customBeatmapData.SetBeatmapCustomData(at(lisd.beatmapCustomDatasByFilename, difficultyFileName) ?? Tree());
-                customBeatmapData.SetLevelCustomData(lisd.customData ?? Tree());
+                customBeatmapData.SetLevelCustomData(at(lisd.beatmapCustomDatasByFilename, difficultyFileName) ?? Tree(), lisd.customData ?? Tree());
             }
         }
     }

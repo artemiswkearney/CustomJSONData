@@ -1,9 +1,12 @@
 ﻿namespace CustomJSONData.CustomBeatmap
 {
+    using System;
     using System.Collections.Generic;
 
     public class CustomBeatmapData : BeatmapData
     {
+        public static event Action<CustomBeatmapData> CustomBeatmapDataWasCreated;
+
         public List<CustomEventData> customEventsData { get; }
         public dynamic customData { get; private set; }
         public dynamic beatmapCustomData { get; private set; }
@@ -48,8 +51,7 @@
                 dst.AddCustomEventData(customEventData);
             }
             dst.SetCustomData(src.customData);
-            dst.SetBeatmapCustomData(src.beatmapCustomData);
-            dst.SetLevelCustomData(src.levelCustomData);
+            dst.SetLevelCustomData(src.beatmapCustomData, src.levelCustomData);
         }
 
         internal void AddCustomEventData(CustomEventData customEventData)
@@ -62,14 +64,11 @@
             this.customData = customData;
         }
 
-        internal void SetBeatmapCustomData(dynamic beatmapCustomData)
+        internal void SetLevelCustomData(dynamic beatmapCustomData, dynamic levelCustomData)
         {
             this.beatmapCustomData = beatmapCustomData;
-        }
-
-        internal void SetLevelCustomData(dynamic levelCustomData)
-        {
             this.levelCustomData = levelCustomData;
+            CustomBeatmapDataWasCreated?.Invoke(this);
         }
     }
 }
