@@ -20,10 +20,10 @@
         private static readonly MethodInfo _createBombCustomNoteData = SymbolExtensions.GetMethodInfo(() => CustomNoteData.CreateBombNoteData(0, 0, 0, null));
         private static readonly MethodInfo _createBasicNoteData = SymbolExtensions.GetMethodInfo(() => NoteData.CreateBasicNoteData(0, 0, 0, 0, 0));
         private static readonly MethodInfo _createBasicCustomNoteData = SymbolExtensions.GetMethodInfo(() => CustomNoteData.CreateBasicNoteData(0, 0, 0, 0, 0, null));
-        private static readonly MethodInfo _createLongNoteData = SymbolExtensions.GetMethodInfo(() => NoteData.CreateLongNoteData(0, 0, 0, 0, 0, 0));
+        ////private static readonly MethodInfo _createLongNoteData = SymbolExtensions.GetMethodInfo(() => NoteData.CreateLongNoteData(0, 0, 0, 0, 0, 0));
         private static readonly MethodInfo _createLongCustomNoteData = SymbolExtensions.GetMethodInfo(() => CustomNoteData.CreateLongNoteData(0, 0, 0, 0, 0, 0, null));
         private static readonly MethodInfo _getNoteCustomData = SymbolExtensions.GetMethodInfo(() => GetNoteCustomData(null));
-        private static readonly MethodInfo _getLongNoteCustomData = SymbolExtensions.GetMethodInfo(() => GetLongNoteCustomData(null));
+        ////private static readonly MethodInfo _getLongNoteCustomData = SymbolExtensions.GetMethodInfo(() => GetLongNoteCustomData(null));
 
         private static readonly ConstructorInfo _obstacleDataCtor = typeof(ObstacleData).GetConstructors().First();
         private static readonly ConstructorInfo _customObstacleDataCtor = typeof(CustomObstacleData).GetConstructors().First();
@@ -44,7 +44,7 @@
 
             bool foundBombNoteData = false;
             bool foundBasicNoteData = false;
-            bool foundLongNoteData = false;
+            ////bool foundLongNoteData = false;
             bool foundObstacleData = false;
             bool foundEventData = false;
             bool foundBeatmapData = false;
@@ -58,7 +58,7 @@
                     foundBombNoteData = true;
                     instructionList[i].operand = _createBombCustomNoteData;
                     instructionList.Insert(i, new CodeInstruction(OpCodes.Call, _getNoteCustomData));
-                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 11));
+                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 10));
                 }
                 if (!foundBasicNoteData &&
                     instructionList[i].opcode == OpCodes.Call &&
@@ -67,9 +67,9 @@
                     foundBasicNoteData = true;
                     instructionList[i].operand = _createBasicCustomNoteData;
                     instructionList.Insert(i, new CodeInstruction(OpCodes.Call, _getNoteCustomData));
-                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 11));
+                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 10));
                 }
-                if (!foundLongNoteData &&
+                /*if (!foundLongNoteData &&
                     instructionList[i].opcode == OpCodes.Call &&
                     instructionList[i].operand == _createLongNoteData)
                 {
@@ -77,7 +77,7 @@
                     instructionList[i].operand = _createLongCustomNoteData;
                     instructionList.Insert(i, new CodeInstruction(OpCodes.Call, _getLongNoteCustomData));
                     instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 12));
-                }
+                }*/
                 
                 if (!foundObstacleData &&
                     instructionList[i].opcode == OpCodes.Newobj &&
@@ -86,7 +86,7 @@
                     foundObstacleData = true;
                     instructionList[i].operand = _customObstacleDataCtor;
                     instructionList.Insert(i, new CodeInstruction(OpCodes.Call, _getObstacleCustomData));
-                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 13));
+                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 11));
                 }
                 if (instructionList[i].opcode == OpCodes.Newobj &&
                     instructionList[i].operand == _eventDataCtor)
@@ -95,7 +95,7 @@
                     instructionList.Insert(i, new CodeInstruction(OpCodes.Call, _getEventCustomData));
                     if (!foundEventData)
                     {
-                        instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 20));
+                        instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 16));
                     }
                     else
                     {
@@ -120,14 +120,14 @@
                     instructionList.Insert(i + 1, new CodeInstruction(OpCodes.Ldarg_0));
                     instructionList.Insert(i + 2, new CodeInstruction(OpCodes.Ldloc_0));
                     instructionList.Insert(i + 3, new CodeInstruction(OpCodes.Ldfld, bpmChangesDataField));
-                    instructionList.Insert(i + 4, new CodeInstruction(OpCodes.Ldarg_S, 6));
-                    instructionList.Insert(i + 5, new CodeInstruction(OpCodes.Ldarg_S, 7));
+                    instructionList.Insert(i + 4, new CodeInstruction(OpCodes.Ldarg_S, 5));
+                    instructionList.Insert(i + 5, new CodeInstruction(OpCodes.Ldarg_S, 6));
                     instructionList.Insert(i + 6, new CodeInstruction(OpCodes.Call, _createCustomBeatmapData));
                     instructionList.Insert(i + 7, new CodeInstruction(OpCodes.Stloc_1));
                 }
             }
 #pragma warning restore CS0252
-            if (!foundBombNoteData || !foundBasicNoteData || !foundLongNoteData || !foundObstacleData || !foundEventData || !foundBeatmapData)
+            if (!foundBombNoteData || !foundBasicNoteData || /*!foundLongNoteData ||*/ !foundObstacleData || !foundEventData || !foundBeatmapData)
             {
                 Logger.Log("Failed to patch GetBeatmapDataFromBeatmapSaveData in BeatmapDataLoader!", IPA.Logging.Logger.Level.Error);
             }
@@ -149,7 +149,7 @@
             return Tree();
         }
 
-        private static dynamic GetLongNoteCustomData(BeatmapSaveData.LongNoteData noteSaveData)
+        /*private static dynamic GetLongNoteCustomData(BeatmapSaveData.LongNoteData noteSaveData)
         {
             if (noteSaveData is CustomBeatmapSaveData.LongNoteData customNoteSaveData)
             {
@@ -161,7 +161,7 @@
             }
 
             return Tree();
-        }
+        }*/
 
         private static dynamic GetObstacleCustomData(BeatmapSaveData.ObstacleData obstacleSaveData)
         {
@@ -265,7 +265,7 @@
                     instructionList[i].operand == _getBeatmapData)
                 {
                     foundGetBeatmapData = true;
-                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 4));
+                    instructionList.Insert(i, new CodeInstruction(OpCodes.Ldloc_S, 3));
                     instructionList.Insert(i + 1, new CodeInstruction(OpCodes.Call, _storeCustomEventsSaveData));
                 }
             }

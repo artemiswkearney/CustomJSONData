@@ -9,14 +9,14 @@
     public class CustomBeatmapSaveData : BeatmapSaveData
     {
         public CustomBeatmapSaveData(List<BeatmapSaveData.EventData> events, List<BeatmapSaveData.NoteData> notes,
-            List<BeatmapSaveData.LongNoteData> longNotes, List<BeatmapSaveData.ObstacleData> obstacles) : base(events, notes, longNotes, obstacles)
+            /*List<BeatmapSaveData.LongNoteData> longNotes, */List<BeatmapSaveData.ObstacleData> obstacles) : base(events, notes, /*longNotes,*/ obstacles)
         {
             // Default values for these fields
             // We deserialize using NullValueHandling.Ignore so that these fields do not get overwritten if they are missing in the json string
             _version = string.Empty;
             _customData = Trees.Tree();
             _events = new List<EventData>();
-            _longNotes = new List<LongNoteData>();
+            ////_longNotes = new List<LongNoteData>();
             _notes = new List<NoteData>();
             _obstacles = new List<ObstacleData>();
         }
@@ -92,12 +92,12 @@
             set => base._notes = value.Cast<BeatmapSaveData.NoteData>().ToList();
         }
 
-        [JsonProperty]
+        /*[JsonProperty]
         protected new List<LongNoteData> _longNotes
         {
             get => base._longNotes.Cast<LongNoteData>().ToList();
             set => base._longNotes = value.Cast<BeatmapSaveData.LongNoteData>().ToList();
-        }
+        }*/
 
         [JsonProperty]
         protected new List<ObstacleData> _obstacles
@@ -226,8 +226,8 @@
             [JsonConverter(typeof(ExpandoObjectConverter))]
             protected dynamic _customData;
         }
-
-        [Serializable]
+        
+        /*[Serializable]
         public new class LongNoteData : BeatmapSaveData.LongNoteData
         {
             public LongNoteData(float time, int lineIndex, NoteLineLayer lineLayer, LongNoteType type, NoteCutDirection cutDirection, float duration)
@@ -283,7 +283,7 @@
             [JsonProperty]
             [JsonConverter(typeof(ExpandoObjectConverter))]
             protected dynamic _customData;
-        }
+        }*/
 
         [Serializable]
         public new class ObstacleData : BeatmapSaveData.ObstacleData
