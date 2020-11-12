@@ -23,6 +23,7 @@
             CustomBeatmapData customBeatmapData = new CustomBeatmapData(_beatmapLinesData.Length);
             CopyBeatmapObjects(this, customBeatmapData);
             CopyBeatmapEvents(this, customBeatmapData);
+            CopyAvailableSpecialEventsPerKeywordDictionary(this, customBeatmapData);
             CopyCustomData(this, customBeatmapData);
             return customBeatmapData;
         }
@@ -39,6 +40,7 @@
         {
             CustomBeatmapData customBeatmapData = new CustomBeatmapData(_beatmapLinesData.Length);
             CopyBeatmapEvents(this, customBeatmapData);
+            CopyAvailableSpecialEventsPerKeywordDictionary(this, customBeatmapData);
             CopyCustomData(this, customBeatmapData);
             return customBeatmapData;
         }

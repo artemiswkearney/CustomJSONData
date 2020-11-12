@@ -17,7 +17,7 @@
         [OnStart]
         public void OnApplicationStart()
         {
-            Harmony harmony = new Harmony("com.arti.BeatSaber.CustomJSONData");
+            Harmony harmony = new Harmony("com.noodle.BeatSaber.CustomJSONData");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
     }

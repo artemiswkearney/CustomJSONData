@@ -12,10 +12,5 @@
             this.type = type;
             this.data = data;
         }
-
-        public CustomEventData GetCopy()
-        {
-            return new CustomEventData(time, type, Trees.copy(data));
-        }
     }
 }

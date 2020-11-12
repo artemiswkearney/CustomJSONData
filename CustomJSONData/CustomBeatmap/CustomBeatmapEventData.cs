@@ -8,10 +8,5 @@
         {
             this.customData = customData;
         }
-
-        public BeatmapEventData GetCopy()
-        {
-            return new CustomBeatmapEventData(time, type, value, Trees.copy(customData));
-        }
     }
 }

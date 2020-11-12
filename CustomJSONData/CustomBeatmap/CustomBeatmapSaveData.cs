@@ -8,16 +8,18 @@
 
     public class CustomBeatmapSaveData : BeatmapSaveData
     {
-        public CustomBeatmapSaveData(List<BeatmapSaveData.EventData> events, List<BeatmapSaveData.NoteData> notes,
-            /*List<BeatmapSaveData.LongNoteData> longNotes, */List<BeatmapSaveData.ObstacleData> obstacles) : base(events, notes, /*longNotes,*/ obstacles)
+        public CustomBeatmapSaveData(List<BeatmapSaveData.EventData> events, List<BeatmapSaveData.NoteData> notes, List<BeatmapSaveData.WaypointData> waypoints,
+            /*List<BeatmapSaveData.LongNoteData> longNotes, */List<BeatmapSaveData.ObstacleData> obstacles, BeatmapSaveData.SpecialEventKeywordFiltersData specialEventsKeywordFilters)
+            : base(events, notes, waypoints, /*longNotes,*/ obstacles, specialEventsKeywordFilters)
         {
             // Default values for these fields
             // We deserialize using NullValueHandling.Ignore so that these fields do not get overwritten if they are missing in the json string
             _version = string.Empty;
             _customData = Trees.Tree();
             _events = new List<EventData>();
-            ////_longNotes = new List<LongNoteData>();
             _notes = new List<NoteData>();
+            ////_longNotes = new List<LongNoteData>();
+            _waypoints = new List<WaypointData>();
             _obstacles = new List<ObstacleData>();
         }
 
@@ -98,6 +100,13 @@
             get => base._longNotes.Cast<LongNoteData>().ToList();
             set => base._longNotes = value.Cast<BeatmapSaveData.LongNoteData>().ToList();
         }*/
+
+        [JsonProperty]
+        protected new List<WaypointData> _waypoints
+        {
+            get => base._waypoints.Cast<WaypointData>().ToList();
+            set => base._waypoints = value.Cast<BeatmapSaveData.WaypointData>().ToList();
+        }
 
         [JsonProperty]
         protected new List<ObstacleData> _obstacles
@@ -226,7 +235,50 @@
             [JsonConverter(typeof(ExpandoObjectConverter))]
             protected dynamic _customData;
         }
-        
+
+        [Serializable]
+        public new class WaypointData : BeatmapSaveData.WaypointData
+        {
+            public WaypointData(float time, int lineIndex, NoteLineLayer lineLayer, OffsetDirection offsetDirection) : base(time, lineIndex, lineLayer, offsetDirection)
+            {
+            }
+
+            [JsonIgnore]
+            public dynamic customData => _customData;
+
+            [JsonProperty]
+            protected new float _time
+            {
+                get => base._time;
+                set => base._time = value;
+            }
+
+            [JsonProperty]
+            protected new int _lineIndex
+            {
+                get => base._lineIndex;
+                set => base._lineIndex = value;
+            }
+
+            [JsonProperty]
+            protected new NoteLineLayer _lineLayer
+            {
+                get => base._lineLayer;
+                set => base._lineLayer = value;
+            }
+
+            [JsonProperty]
+            protected new OffsetDirection _offsetDirection
+            {
+                get => base._offsetDirection;
+                set => base._offsetDirection = value;
+            }
+
+            [JsonProperty]
+            [JsonConverter(typeof(ExpandoObjectConverter))]
+            protected dynamic _customData;
+        }
+
         /*[Serializable]
         public new class LongNoteData : BeatmapSaveData.LongNoteData
         {
@@ -328,6 +380,51 @@
             {
                 get => base._width;
                 set => base._width = value;
+            }
+
+            [JsonProperty]
+            [JsonConverter(typeof(ExpandoObjectConverter))]
+            protected dynamic _customData;
+        }
+
+        // _customData for these are currently thrown away, there is not currently a way to retrieve them
+        [Serializable]
+        public new class SpecialEventKeywordFiltersData : BeatmapSaveData.SpecialEventKeywordFiltersData
+        {
+            public SpecialEventKeywordFiltersData(List<BeatmapSaveData.SpecialEventsForKeyword> keywords) : base(keywords)
+            {
+            }
+
+            [JsonProperty]
+            protected new List<SpecialEventsForKeyword> _keywords
+            {
+                get => base._keywords.Cast<SpecialEventsForKeyword>().ToList();
+                set => base._keywords = value.Cast<BeatmapSaveData.SpecialEventsForKeyword>().ToList();
+            }
+        }
+
+        [Serializable]
+        public new class SpecialEventsForKeyword : BeatmapSaveData.SpecialEventsForKeyword
+        {
+            public SpecialEventsForKeyword(string keyword, List<BeatmapEventType> specialEvents) : base(keyword, specialEvents)
+            {
+            }
+
+            [JsonIgnore]
+            public dynamic customData => _customData;
+
+            [JsonProperty]
+            protected new string _keyword
+            {
+                get => base._keyword;
+                set => base._keyword = value;
+            }
+
+            [JsonProperty]
+            protected new List<BeatmapEventType> _specialEvents
+            {
+                get => base._specialEvents;
+                set => base._specialEvents = value;
             }
 
             [JsonProperty]
