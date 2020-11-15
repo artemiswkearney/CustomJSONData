@@ -115,6 +115,13 @@
             set => base._obstacles = value.Cast<BeatmapSaveData.ObstacleData>().ToList();
         }
 
+        [JsonProperty]
+        protected new SpecialEventKeywordFiltersData _specialEventsKeywordFilters
+        {
+            get => (SpecialEventKeywordFiltersData)base._specialEventsKeywordFilters;
+            set => base._specialEventsKeywordFilters = value;
+        }
+
         [Serializable]
         public new class EventData : BeatmapSaveData.EventData
         {
