@@ -1,5 +1,7 @@
 ﻿namespace CustomJSONData
 {
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -38,6 +40,15 @@
                 t[p.Key] = p.Value;
             }
             return t;
+        }
+
+        public static dynamic fromJSON(string json)
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter>() { new ExpandoObjectConverter() }
+            };
+            return JsonConvert.DeserializeObject(json, settings);
         }
 
         /// <summary>
