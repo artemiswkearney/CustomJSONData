@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Reflection;
 
     public class CustomBeatmapData : BeatmapData
     {
@@ -11,6 +12,49 @@
         public dynamic customData { get; private set; }
         public dynamic beatmapCustomData { get; private set; }
         public dynamic levelCustomData { get; private set; }
+
+        private static MethodInfo CopyBeatmapObjectsMethod
+        {
+            get
+            {
+                if (_copyBeatmapObjects == null)
+                {
+                    _copyBeatmapObjects = typeof(BeatmapData).GetMethod("CopyBeatmapObjects", BindingFlags.Static | BindingFlags.NonPublic);
+                }
+
+                return _copyBeatmapObjects;
+            }
+        }
+
+        private static MethodInfo CopyBeatmapEventsMethod
+        {
+            get
+            {
+                if (_copyBeatmapEvents == null)
+                {
+                    _copyBeatmapEvents = typeof(BeatmapData).GetMethod("CopyBeatmapEvents", BindingFlags.Static | BindingFlags.NonPublic);
+                }
+
+                return _copyBeatmapEvents;
+            }
+        }
+
+        private static MethodInfo CopyAvailableSpecialEventsPerKeywordDictionaryMethod
+        {
+            get
+            {
+                if (_copyAvailableSpecialEventsPerKeywordDictionary == null)
+                {
+                    _copyAvailableSpecialEventsPerKeywordDictionary = typeof(BeatmapData).GetMethod("CopyAvailableSpecialEventsPerKeywordDictionary", BindingFlags.Static | BindingFlags.NonPublic);
+                }
+
+                return _copyAvailableSpecialEventsPerKeywordDictionary;
+            }
+        }
+
+        private static MethodInfo _copyBeatmapObjects;
+        private static MethodInfo _copyBeatmapEvents;
+        private static MethodInfo _copyAvailableSpecialEventsPerKeywordDictionary;
 
         public CustomBeatmapData(int numberOfLines) : base(numberOfLines)
         {
@@ -45,8 +89,22 @@
             return customBeatmapData;
         }
 
-        // The 'src' variable is completely unneccessary because this is an instance method but i'm just matching the base game methods
-        internal void CopyCustomData(CustomBeatmapData src, CustomBeatmapData dst)
+        public static void CopyBeatmapObjects(IReadonlyBeatmapData src, BeatmapData dst)
+        {
+            CopyBeatmapObjectsMethod.Invoke(null, new object[] { src, dst });
+        }
+
+        public static void CopyBeatmapEvents(IReadonlyBeatmapData src, BeatmapData dst)
+        {
+            CopyBeatmapEventsMethod.Invoke(null, new object[] { src, dst });
+        }
+
+        public static void CopyAvailableSpecialEventsPerKeywordDictionary(IReadonlyBeatmapData src, BeatmapData dst)
+        {
+            CopyAvailableSpecialEventsPerKeywordDictionaryMethod.Invoke(null, new object[] { src, dst });
+        }
+
+        public static void CopyCustomData(CustomBeatmapData src, CustomBeatmapData dst)
         {
             foreach (CustomEventData customEventData in src.customEventsData)
             {

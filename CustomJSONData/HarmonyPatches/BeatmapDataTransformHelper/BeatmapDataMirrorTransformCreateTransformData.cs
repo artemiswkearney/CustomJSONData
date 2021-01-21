@@ -15,7 +15,7 @@
         {
             if (beatmapData is CustomBeatmapData customBeatmapData)
             {
-                customBeatmapData.CopyCustomData(customBeatmapData, result);
+                CustomBeatmapData.CopyCustomData(customBeatmapData, result);
             }
             
             // keep result on the stack
