@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Reflection;
+    using static CustomJSONData.Trees;
 
     public class CustomBeatmapData : BeatmapData
     {
@@ -110,8 +111,8 @@
             {
                 dst.AddCustomEventData(customEventData);
             }
-            dst.SetCustomData(src.customData);
-            dst.SetLevelCustomData(src.beatmapCustomData, src.levelCustomData);
+            dst.SetCustomData(Trees.copy(src?.customData ?? Tree()));
+            dst.SetLevelCustomData(Trees.copy(src?.beatmapCustomData ?? Tree()), Trees.copy(src?.levelCustomData ?? Tree()));
         }
 
         internal void AddCustomEventData(CustomEventData customEventData)
