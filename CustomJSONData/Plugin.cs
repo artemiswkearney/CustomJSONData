@@ -6,7 +6,7 @@
     using IPALogger = IPA.Logging.Logger;
 
     [Plugin(RuntimeOptions.SingleStartInit)]
-    public class Plugin
+    internal class Plugin
     {
         [Init]
         public void Init(IPALogger l)
@@ -17,7 +17,7 @@
         [OnStart]
         public void OnApplicationStart()
         {
-            Harmony harmony = new Harmony("com.noodle.BeatSaber.CustomJSONData");
+            Harmony harmony = new Harmony("com.aeroluna.BeatSaber.CustomJSONData");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
     }
