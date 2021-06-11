@@ -227,20 +227,20 @@
 
             CustomBeatmapData customBeatmapData = new CustomBeatmapData(4);
 
+            // BeatmapDataLoader's BPMChangeData is private so we get to do a crap top of reflection to convert it to our BPMChangeData
+            Type BPMChangeData = Type.GetType("BeatmapDataLoader+BpmChangeData,Main");
+            List<BPMChangeData> BPMChanges = new List<BPMChangeData>();
+            foreach (object i in RawBPMChanges as IEnumerable)
+            {
+                float bpmChangeStartTime = (float)BPMChangeData.GetField("bpmChangeStartTime").GetValue(i);
+                float bpmChangeStartBPMTime = (float)BPMChangeData.GetField("bpmChangeStartBpmTime").GetValue(i);
+                float bpm = (float)BPMChangeData.GetField("bpm").GetValue(i);
+
+                BPMChanges.Add(new BPMChangeData(bpmChangeStartTime, bpmChangeStartBPMTime, bpm));
+            }
+
             foreach (CustomBeatmapSaveData.CustomEventData customEventData in customEventsSaveData)
             {
-                // BeatmapDataLoader's BPMChangeData is private so we get to do a crap top of reflection to convert it to our BPMChangeData
-                Type BPMChangeData = Type.GetType("BeatmapDataLoader+BpmChangeData,Main");
-                List<BPMChangeData> BPMChanges = new List<BPMChangeData>();
-                foreach (object i in RawBPMChanges as IEnumerable)
-                {
-                    float bpmChangeStartTime = (float)BPMChangeData.GetField("bpmChangeStartTime").GetValue(i);
-                    float bpmChangeStartBPMTime = (float)BPMChangeData.GetField("bpmChangeStartBpmTime").GetValue(i);
-                    float bpm = (float)BPMChangeData.GetField("bpm").GetValue(i);
-
-                    BPMChanges.Add(new BPMChangeData(bpmChangeStartTime, bpmChangeStartBPMTime, bpm));
-                }
-
                 // Same math from BeatmapDataLoader
                 int bpmChangesDataIdx = 0;
                 float time = customEventData.time;
