@@ -11,22 +11,11 @@
     [HarmonyPatch("CreateTransformedData")]
     internal class BeatDataMirrorTransformCreateTransformData
     {
-        private static CustomBeatmapData CopyCustomData(CustomBeatmapData result, IReadonlyBeatmapData beatmapData)
-        {
-            if (beatmapData is CustomBeatmapData customBeatmapData)
-            {
-                CustomBeatmapData.CopyCustomData(customBeatmapData, result);
-            }
-            
-            // keep result on the stack
-            return result;
-        }
-
         private static readonly ConstructorInfo _beatmapDataCtor = typeof(BeatmapData).GetConstructors().First();
         private static readonly ConstructorInfo _customBeatmapDataCtor = typeof(CustomBeatmapData).GetConstructors().First();
         private static readonly MethodInfo _copyCustomData = SymbolExtensions.GetMethodInfo(() => CopyCustomData(null, null));
 
-        internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             List<CodeInstruction> instructionList = instructions.ToList();
             bool foundCtor = false;
@@ -50,6 +39,17 @@
             }
 
             return instructionList.AsEnumerable();
+        }
+
+        private static CustomBeatmapData CopyCustomData(CustomBeatmapData result, IReadonlyBeatmapData beatmapData)
+        {
+            if (beatmapData is CustomBeatmapData customBeatmapData)
+            {
+                CustomBeatmapData.CopyCustomData(customBeatmapData, result);
+            }
+
+            // keep result on the stack
+            return result;
         }
     }
 }

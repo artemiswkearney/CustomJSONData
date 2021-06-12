@@ -1,12 +1,15 @@
 ﻿namespace CustomJSONData.CustomBeatmap
 {
+    using System.Collections.Generic;
+
     public class CustomBeatmapEventData : BeatmapEventData
     {
-        public dynamic customData { get; private set; }
-
-        public CustomBeatmapEventData(float time, BeatmapEventType type, int value, dynamic customData) : base(time, type, value)
+        private CustomBeatmapEventData(float time, BeatmapEventType type, int value, Dictionary<string, object> customData)
+            : base(time, type, value)
         {
             this.customData = customData;
         }
+
+        public Dictionary<string, object> customData { get; }
     }
 }

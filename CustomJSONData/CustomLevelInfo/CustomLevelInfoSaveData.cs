@@ -2,9 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Dynamic;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
-    using static CustomJSONData.Trees;
 
     public class CustomLevelInfoSaveData : StandardLevelInfoSaveData
     {
@@ -37,7 +37,7 @@
                 {
                     StandardLevelInfoSaveData.DifficultyBeatmap standardBeatmap = standardBeatmapSet.difficultyBeatmaps[j];
                     DifficultyBeatmap customBeatmap = new DifficultyBeatmap(standardBeatmap.difficulty, standardBeatmap.difficultyRank, standardBeatmap.beatmapFilename, standardBeatmap.noteJumpMovementSpeed,
-                                                                            standardBeatmap.noteJumpStartBeatOffset, customDatas._difficultyBeatmapSets[i]._difficultyBeatmaps[j]._customData ?? Tree());
+                                                                            standardBeatmap.noteJumpStartBeatOffset, customDatas._difficultyBeatmapSets[i]._difficultyBeatmaps[j]._customData ?? new ExpandoObject());
                     customBeatmaps[j] = customBeatmap;
                     beatmapsByFilename[customBeatmap.beatmapFilename] = customBeatmap.customData;
                 }
@@ -46,7 +46,7 @@
             return new CustomLevelInfoSaveData(standardSaveData.songName, standardSaveData.songSubName, standardSaveData.songAuthorName, standardSaveData.levelAuthorName,
                                                                          standardSaveData.beatsPerMinute, standardSaveData.songTimeOffset, standardSaveData.shuffle, standardSaveData.shufflePeriod,
                                                                          standardSaveData.previewStartTime, standardSaveData.previewDuration, standardSaveData.songFilename, standardSaveData.coverImageFilename,
-                                                                         standardSaveData.environmentName, standardSaveData.allDirectionsEnvironmentName, customBeatmapSets, customDatas._customData ?? Tree(), beatmapsByFilename);
+                                                                         standardSaveData.environmentName, standardSaveData.allDirectionsEnvironmentName, customBeatmapSets, customDatas._customData ?? new ExpandoObject(), beatmapsByFilename);
         }
 
         public new class DifficultyBeatmap : StandardLevelInfoSaveData.DifficultyBeatmap

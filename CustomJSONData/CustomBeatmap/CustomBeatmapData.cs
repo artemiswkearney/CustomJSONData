@@ -3,16 +3,28 @@
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using static CustomJSONData.Trees;
 
     public class CustomBeatmapData : BeatmapData
     {
+        private static MethodInfo _copyBeatmapObjects;
+        private static MethodInfo _copyBeatmapEvents;
+        private static MethodInfo _copyAvailableSpecialEventsPerKeywordDictionary;
+
+        public CustomBeatmapData(int numberOfLines)
+            : base(numberOfLines)
+        {
+            customEventsData = new List<CustomEventData>(200);
+        }
+
         public static event Action<CustomBeatmapData> CustomBeatmapDataWasCreated;
 
         public List<CustomEventData> customEventsData { get; }
-        public dynamic customData { get; private set; }
-        public dynamic beatmapCustomData { get; private set; }
-        public dynamic levelCustomData { get; private set; }
+
+        public Dictionary<string, object> customData { get; private set; }
+
+        public Dictionary<string, object> beatmapCustomData { get; private set; }
+
+        public Dictionary<string, object> levelCustomData { get; private set; }
 
         private static MethodInfo CopyBeatmapObjectsMethod
         {
@@ -53,43 +65,6 @@
             }
         }
 
-        private static MethodInfo _copyBeatmapObjects;
-        private static MethodInfo _copyBeatmapEvents;
-        private static MethodInfo _copyAvailableSpecialEventsPerKeywordDictionary;
-
-        public CustomBeatmapData(int numberOfLines) : base(numberOfLines)
-        {
-            customEventsData = new List<CustomEventData>(200);
-        }
-
-        // In a perfect world, these would be overrides. Instead, we harmony patch
-        internal new CustomBeatmapData GetCopy()
-        {
-            CustomBeatmapData customBeatmapData = new CustomBeatmapData(_beatmapLinesData.Length);
-            CopyBeatmapObjects(this, customBeatmapData);
-            CopyBeatmapEvents(this, customBeatmapData);
-            CopyAvailableSpecialEventsPerKeywordDictionary(this, customBeatmapData);
-            CopyCustomData(this, customBeatmapData);
-            return customBeatmapData;
-        }
-
-        internal new CustomBeatmapData GetCopyWithoutEvents()
-        {
-            CustomBeatmapData customBeatmapData = new CustomBeatmapData(_beatmapLinesData.Length);
-            CopyBeatmapObjects(this, customBeatmapData);
-            CopyCustomData(this, customBeatmapData);
-            return customBeatmapData;
-        }
-
-        internal new CustomBeatmapData GetCopyWithoutBeatmapObjects()
-        {
-            CustomBeatmapData customBeatmapData = new CustomBeatmapData(_beatmapLinesData.Length);
-            CopyBeatmapEvents(this, customBeatmapData);
-            CopyAvailableSpecialEventsPerKeywordDictionary(this, customBeatmapData);
-            CopyCustomData(this, customBeatmapData);
-            return customBeatmapData;
-        }
-
         public static void CopyBeatmapObjects(IReadonlyBeatmapData src, BeatmapData dst)
         {
             CopyBeatmapObjectsMethod.Invoke(null, new object[] { src, dst });
@@ -111,8 +86,36 @@
             {
                 dst.AddCustomEventData(customEventData);
             }
-            dst.SetCustomData(Trees.copy(src?.customData ?? Tree()));
-            dst.SetLevelCustomData(Trees.copy(src?.beatmapCustomData ?? Tree()), Trees.copy(src?.levelCustomData ?? Tree()));
+
+            dst.SetCustomData(src.customData.Copy());
+            dst.SetLevelCustomData(src.beatmapCustomData.Copy(), src.levelCustomData.Copy());
+        }
+
+        public override BeatmapData GetCopy()
+        {
+            CustomBeatmapData customBeatmapData = new CustomBeatmapData(_beatmapLinesData.Length);
+            CopyBeatmapObjects(this, customBeatmapData);
+            CopyBeatmapEvents(this, customBeatmapData);
+            CopyAvailableSpecialEventsPerKeywordDictionary(this, customBeatmapData);
+            CopyCustomData(this, customBeatmapData);
+            return customBeatmapData;
+        }
+
+        public override BeatmapData GetCopyWithoutEvents()
+        {
+            CustomBeatmapData customBeatmapData = new CustomBeatmapData(_beatmapLinesData.Length);
+            CopyBeatmapObjects(this, customBeatmapData);
+            CopyCustomData(this, customBeatmapData);
+            return customBeatmapData;
+        }
+
+        public override BeatmapData GetCopyWithoutBeatmapObjects()
+        {
+            CustomBeatmapData customBeatmapData = new CustomBeatmapData(_beatmapLinesData.Length);
+            CopyBeatmapEvents(this, customBeatmapData);
+            CopyAvailableSpecialEventsPerKeywordDictionary(this, customBeatmapData);
+            CopyCustomData(this, customBeatmapData);
+            return customBeatmapData;
         }
 
         internal void AddCustomEventData(CustomEventData customEventData)
@@ -120,12 +123,12 @@
             customEventsData.Add(customEventData);
         }
 
-        internal void SetCustomData(dynamic customData)
+        internal void SetCustomData(Dictionary<string, object> customData)
         {
             this.customData = customData;
         }
 
-        internal void SetLevelCustomData(dynamic beatmapCustomData, dynamic levelCustomData)
+        internal void SetLevelCustomData(Dictionary<string, object> beatmapCustomData, Dictionary<string, object> levelCustomData)
         {
             this.beatmapCustomData = beatmapCustomData;
             this.levelCustomData = levelCustomData;
