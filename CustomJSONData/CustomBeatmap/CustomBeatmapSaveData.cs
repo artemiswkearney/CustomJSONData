@@ -1,15 +1,9 @@
 ﻿namespace CustomJSONData.CustomBeatmap
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Diagnostics;
-    using System.Dynamic;
     using System.IO;
-    using CustomJSONData.CustomBeatmap;
-    using CustomJSONData.CustomLevelInfo;
+    using System.Linq;
     using Newtonsoft.Json;
-    using HarmonyLib;
 
     internal class CustomBeatmapSaveData : BeatmapSaveData
     {
@@ -82,9 +76,11 @@
                                             case "_value":
                                                 value = (int)reader.ReadAsInt32();
                                                 break;
+
                                             case "_customData":
                                                 reader.ReadToDictionary(data);
                                                 break;
+
                                             default:
                                                 reader.Skip();
                                                 break;
@@ -132,6 +128,7 @@
                                             case "_customData":
                                                 reader.ReadToDictionary(data);
                                                 break;
+
                                             default:
                                                 reader.Skip();
                                                 break;
@@ -174,6 +171,7 @@
                                             case "_customData":
                                                 reader.ReadToDictionary(data);
                                                 break;
+
                                             default:
                                                 reader.Skip();
                                                 break;
@@ -225,7 +223,6 @@
                                             default:
                                                 reader.Skip();
                                                 break;
-
                                         }
                                     });
 
@@ -290,7 +287,8 @@
                             case "_customData":
                                 reader.ReadToDictionary(customData, propertyName =>
                                 {
-                                    if (propertyName == "_customEvemts") {
+                                    if (propertyName == "_customEvemts")
+                                    {
                                         reader.ReadObjectArray(() =>
                                         {
                                             float time = default;
@@ -327,17 +325,17 @@
                         }
                     }
                 }
-
-                return new CustomBeatmapSaveData(
-                    version,
-                    events.Cast<BeatmapSaveData.EventData>().ToList(),
-                    notes.Cast<BeatmapSaveData.NoteData>().ToList(),
-                    waypoints.Cast<BeatmapSaveData.WaypointData>().ToList(),
-                    obstacles.Cast<BeatmapSaveData.ObstacleData>().ToList(),
-                    new SpecialEventKeywordFiltersData(keywords),
-                    customData,
-                    customEvents);
             }
+
+            return new CustomBeatmapSaveData(
+                version,
+                events.Cast<BeatmapSaveData.EventData>().ToList(),
+                notes.Cast<BeatmapSaveData.NoteData>().ToList(),
+                waypoints.Cast<BeatmapSaveData.WaypointData>().ToList(),
+                obstacles.Cast<BeatmapSaveData.ObstacleData>().ToList(),
+                new SpecialEventKeywordFiltersData(keywords),
+                customData,
+                customEvents);
         }
 
         internal new class EventData : BeatmapSaveData.EventData

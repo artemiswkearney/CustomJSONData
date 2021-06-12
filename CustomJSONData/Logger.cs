@@ -3,6 +3,7 @@
     using System.Runtime.CompilerServices;
 
     using IPALogger = IPA.Logging.Logger;
+
     internal static class Logger
     {
         internal static IPALogger logger { get; set; }

@@ -102,6 +102,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomBeatmap\CustomLevelInfoSaveData.cs" />
     <Compile Include="CustomBeatmap\CustomWaypointData.cs" />
     <Compile Include="CustomEventCallbackController.cs" />
     <Compile Include="CustomBeatmap\CustomBeatmapData.cs" />
@@ -110,12 +111,10 @@
     <Compile Include="CustomBeatmap\CustomEventData.cs" />
     <Compile Include="CustomBeatmap\CustomNoteData.cs" />
     <Compile Include="CustomBeatmap\CustomObstacleData.cs" />
-    <Compile Include="CustomLevelInfo\CustomLevelInfoSaveData.cs" />
     <Compile Include="HarmonyPatches\BeatmapDataTransformHelper\BeatmapDataMirrorTransformCreateTransformData.cs" />
     <Compile Include="HarmonyPatches\CustomBeatmapData\BeatmapDataLoader.cs" />
     <Compile Include="HarmonyPatches\CustomEventCallback\BeatmapObjectCallbackController.cs" />
     <Compile Include="HarmonyPatches\CustomBeatmapData\CustomLevelLoader.cs" />
-    <Compile Include="HarmonyPatches\CustomBeatmapData\StandardLevelInfoSaveData.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

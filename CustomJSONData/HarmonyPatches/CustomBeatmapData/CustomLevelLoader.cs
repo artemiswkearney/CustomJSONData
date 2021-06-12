@@ -1,14 +1,25 @@
 ﻿namespace CustomJSONData.HarmonyPatches
 {
-    using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Dynamic;
     using System.IO;
     using CustomJSONData.CustomBeatmap;
-    using CustomJSONData.CustomLevelInfo;
-    using Newtonsoft.Json;
     using HarmonyLib;
+
+    [HarmonyPatch(typeof(CustomLevelLoader))]
+    [HarmonyPatch("LoadCustomLevelInfoSaveData")]
+    internal class CustomLevelLoaderLoadCustomLevelInfoSaveData
+    {
+        private static bool Prefix(ref StandardLevelInfoSaveData __result, string customLevelPath)
+        {
+            string path = Path.Combine(customLevelPath, "Info.dat");
+            if (File.Exists(path))
+            {
+                __result = CustomLevelInfoSaveData.Deserialize(path);
+            }
+
+            return false;
+        }
+    }
 
     [HarmonyPatch(typeof(CustomLevelLoader))]
     [HarmonyPatch("LoadBeatmapDataBeatmapData")]
@@ -36,10 +47,9 @@
 
         private static void Postfix(BeatmapData __result, string difficultyFileName, StandardLevelInfoSaveData standardLevelInfoSaveData)
         {
-            if (__result != null && __result is CustomBeatmapData customBeatmapData && standardLevelInfoSaveData is CustomLevelInfoSaveData lisd)
+            if (__result != null && __result is CustomBeatmapData customBeatmapData && standardLevelInfoSaveData is CustomLevelInfoSaveData customLevelInfoSaveData)
             {
-                customBeatmapData.SetLevelCustomData(new Dictionary<string, object>(), new Dictionary<string, object>());
-                //customBeatmapData.SetLevelCustomData(at(lisd.beatmapCustomDatasByFilename, difficultyFileName) ?? Tree(), lisd.customData ?? Tree());
+                customBeatmapData.SetLevelCustomData(customLevelInfoSaveData.beatmapCustomDatasByFilename[difficultyFileName], customLevelInfoSaveData.customData);
             }
         }
     }

@@ -2,10 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Dynamic;
-    using System.IO;
-    using CustomJSONData.CustomBeatmap;
     using Newtonsoft.Json;
 
     internal static class JsonExtensions
@@ -25,7 +21,6 @@
 
         internal static void ReadObjectArray(this JsonReader reader, Action action)
         {
-
             reader.Read(); // StartArray
             if (reader.TokenType != JsonToken.StartArray)
             {
@@ -52,8 +47,10 @@
             {
                 case JsonToken.StartObject:
                     return ObjectReadObject(reader);
+
                 case JsonToken.StartArray:
                     return ObjectReadList(reader);
+
                 default:
                     return reader.Value;
             }
@@ -69,9 +66,11 @@
                 {
                     case JsonToken.Comment:
                         break;
+
                     default:
                         list.Add(ObjectReadValue(reader));
                         break;
+
                     case JsonToken.EndArray:
                         return list;
                 }
@@ -109,8 +108,10 @@
                         }
 
                         break;
+
                     case JsonToken.Comment:
                         break;
+
                     case JsonToken.EndObject:
                         return dictionary;
                 }

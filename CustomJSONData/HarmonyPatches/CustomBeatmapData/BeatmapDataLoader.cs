@@ -1,7 +1,5 @@
 ﻿namespace CustomJSONData.HarmonyPatches
 {
-    using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
@@ -142,7 +140,7 @@
             return instructionList.AsEnumerable();
         }
 
-        private static dynamic GetNoteCustomData(BeatmapSaveData.NoteData noteSaveData)
+        private static Dictionary<string, object> GetNoteCustomData(BeatmapSaveData.NoteData noteSaveData)
         {
             if (noteSaveData is CustomBeatmapSaveData.NoteData customNoteSaveData)
             {
@@ -152,7 +150,7 @@
             return new Dictionary<string, object>();
         }
 
-        private static dynamic GetWaypointCustomData(BeatmapSaveData.WaypointData waypointData)
+        private static Dictionary<string, object> GetWaypointCustomData(BeatmapSaveData.WaypointData waypointData)
         {
             if (waypointData is CustomBeatmapSaveData.WaypointData customWaypointData)
             {
@@ -162,7 +160,7 @@
             return new Dictionary<string, object>();
         }
 
-        private static dynamic GetObstacleCustomData(BeatmapSaveData.ObstacleData obstacleSaveData)
+        private static Dictionary<string, object> GetObstacleCustomData(BeatmapSaveData.ObstacleData obstacleSaveData)
         {
             if (obstacleSaveData is CustomBeatmapSaveData.ObstacleData customObstacleSaveData)
             {
@@ -172,7 +170,7 @@
             return new Dictionary<string, object>();
         }
 
-        private static dynamic GetEventCustomData(BeatmapSaveData.EventData eventSaveData)
+        private static Dictionary<string, object> GetEventCustomData(BeatmapSaveData.EventData eventSaveData)
         {
             if (eventSaveData is CustomBeatmapSaveData.EventData customEventSaveData)
             {
