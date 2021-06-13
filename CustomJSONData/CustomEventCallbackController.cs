@@ -8,40 +8,21 @@
 
     public class CustomEventCallbackController : MonoBehaviour
     {
-        public static event Action<CustomEventCallbackController> customEventCallbackControllerInit;
+        private static readonly FieldAccessor<BeatmapObjectCallbackController, IAudioTimeSource>.Accessor _audioTimeSourceAccessor = FieldAccessor<BeatmapObjectCallbackController, IAudioTimeSource>.GetAccessor("_audioTimeSource");
+        private static readonly FieldAccessor<BeatmapObjectCallbackController, float>.Accessor _spawningStartTimeAccessor = FieldAccessor<BeatmapObjectCallbackController, float>.GetAccessor("_spawningStartTime");
+
+        private readonly List<CustomEventCallbackData> _customEventCallbackData = new List<CustomEventCallbackData>();
 
         private CustomBeatmapData _customBeatmapData;
+        private BeatmapObjectCallbackController _beatmapObjectCallbackController;
 
-        private void Start()
-        {
-            customEventCallbackControllerInit?.Invoke(this);
-        }
+        public delegate void CustomEventCallback(CustomEventData eventData);
 
-        private void LateUpdate()
-        {
-            if (_beatmapObjectCallbackController.enabled && _customBeatmapData != null)
-            {
-                for (int l = 0; l < _customEventCallbackData.Count; l++)
-                {
-                    CustomEventCallbackData customEventCallbackData = _customEventCallbackData[l];
-                    while (customEventCallbackData.nextEventIndex < _customBeatmapData.customEventsData.Count)
-                    {
-                        CustomEventData customEventData = _customBeatmapData.customEventsData[customEventCallbackData.nextEventIndex];
-                        if (customEventData.time - customEventCallbackData.aheadTime >= _audioTimeSource.songTime)
-                        {
-                            break;
-                        }
+        public static event Action<CustomEventCallbackController> customEventCallbackControllerInit;
 
-                        if (customEventData.time >= _spawningStartTime || customEventCallbackData.callIfBeforeStartTime) // skip events before song start
-                        {
-                            customEventCallbackData.callback(customEventData);
-                        }
+        public IAudioTimeSource AudioTimeSource => _audioTimeSourceAccessor(ref _beatmapObjectCallbackController);
 
-                        customEventCallbackData.nextEventIndex++;
-                    }
-                }
-            }
-        }
+        public float SpawningStartTime => _spawningStartTimeAccessor(ref _beatmapObjectCallbackController);
 
         public CustomEventCallbackData AddCustomEventCallback(CustomEventCallback callback, float aheadTime = 0, bool callIfBeforeStartTime = true)
         {
@@ -68,15 +49,41 @@
             }
         }
 
-        private readonly List<CustomEventCallbackData> _customEventCallbackData = new List<CustomEventCallbackData>();
+        internal void Init(BeatmapObjectCallbackController beatmapObjectCallbackController)
+        {
+            customEventCallbackControllerInit?.Invoke(this);
+            _beatmapObjectCallbackController = beatmapObjectCallbackController;
+        }
+
+        private void LateUpdate()
+        {
+            if (_beatmapObjectCallbackController.enabled && _customBeatmapData != null)
+            {
+                for (int l = 0; l < _customEventCallbackData.Count; l++)
+                {
+                    CustomEventCallbackData customEventCallbackData = _customEventCallbackData[l];
+                    while (customEventCallbackData.nextEventIndex < _customBeatmapData.customEventsData.Count)
+                    {
+                        CustomEventData customEventData = _customBeatmapData.customEventsData[customEventCallbackData.nextEventIndex];
+                        if (customEventData.time - customEventCallbackData.aheadTime >= AudioTimeSource.songTime)
+                        {
+                            break;
+                        }
+
+                        // skip events before song start
+                        if (customEventData.time >= SpawningStartTime || customEventCallbackData.callIfBeforeStartTime)
+                        {
+                            customEventCallbackData.callback(customEventData);
+                        }
+
+                        customEventCallbackData.nextEventIndex++;
+                    }
+                }
+            }
+        }
 
         public class CustomEventCallbackData
         {
-            public CustomEventCallback callback;
-            public float aheadTime;
-            public int nextEventIndex;
-            public bool callIfBeforeStartTime;
-
             public CustomEventCallbackData(CustomEventCallback callback, float aheadTime, bool callIfBeforeStartTime)
             {
                 this.callback = callback;
@@ -84,16 +91,14 @@
                 this.callIfBeforeStartTime = callIfBeforeStartTime;
                 nextEventIndex = 0;
             }
+
+            public CustomEventCallback callback { get; set; }
+
+            public float aheadTime { get; set; }
+
+            public int nextEventIndex { get; set; }
+
+            public bool callIfBeforeStartTime { get; set; }
         }
-
-        public delegate void CustomEventCallback(CustomEventData eventData);
-
-        internal BeatmapObjectCallbackController _beatmapObjectCallbackController;
-        private static readonly FieldAccessor<BeatmapObjectCallbackController, IReadonlyBeatmapData>.Accessor _beatmapDataAccessor = FieldAccessor<BeatmapObjectCallbackController, IReadonlyBeatmapData>.GetAccessor("_beatmapData");
-        private static readonly FieldAccessor<BeatmapObjectCallbackController, IAudioTimeSource>.Accessor _audioTimeSourceAccessor = FieldAccessor<BeatmapObjectCallbackController, IAudioTimeSource>.GetAccessor("_audioTimeSource");
-        private static readonly FieldAccessor<BeatmapObjectCallbackController, float>.Accessor _spawningStartTimeAccessor = FieldAccessor<BeatmapObjectCallbackController, float>.GetAccessor("_spawningStartTime");
-        public IReadonlyBeatmapData _beatmapData => _beatmapDataAccessor(ref _beatmapObjectCallbackController);
-        public IAudioTimeSource _audioTimeSource => _audioTimeSourceAccessor(ref _beatmapObjectCallbackController);
-        public float _spawningStartTime => _spawningStartTimeAccessor(ref _beatmapObjectCallbackController);
     }
 }

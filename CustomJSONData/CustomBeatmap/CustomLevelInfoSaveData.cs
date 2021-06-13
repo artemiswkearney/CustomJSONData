@@ -178,7 +178,7 @@
                                                                 difficultyRank = (int)reader.ReadAsInt32();
                                                                 break;
 
-                                                            case "_beatmapFileName":
+                                                            case "_beatmapFilename":
                                                                 beatmapFilename = reader.ReadAsString();
                                                                 break;
 

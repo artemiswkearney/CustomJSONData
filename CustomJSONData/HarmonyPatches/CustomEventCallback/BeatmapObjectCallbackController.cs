@@ -8,7 +8,7 @@
     {
         private static void Prefix(BeatmapObjectCallbackController __instance)
         {
-            __instance.gameObject.AddComponent<CustomEventCallbackController>()._beatmapObjectCallbackController = __instance;
+            __instance.gameObject.AddComponent<CustomEventCallbackController>().Init(__instance);
         }
     }
 
