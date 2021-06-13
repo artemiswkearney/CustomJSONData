@@ -34,7 +34,11 @@
 
         private static readonly MethodInfo _createCustomBeatmapData = SymbolExtensions.GetMethodInfo(() => CreateCustomBeatmapData(null, null, 0, 0));
 
-        internal static CustomBeatmapSaveData CustomBeatmapSaveData { get; set; }
+        internal static CustomBeatmapSaveData BeatmapSaveData { get; set; }
+
+        internal static Dictionary<string, object> BeatmapCustomData { get; set; }
+
+        internal static Dictionary<string, object> LevelCustomData { get; set; }
 
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
@@ -182,28 +186,37 @@
 
         private static CustomBeatmapData CreateCustomBeatmapData(BeatmapDataLoader beatmapDataLoader, List<BeatmapDataLoader.BpmChangeData> bpmChanges, float shuffle, float shufflePeriod)
         {
-            List<CustomBeatmapSaveData.CustomEventData> customEventsSaveData = CustomBeatmapSaveData.customEvents;
-            customEventsSaveData = customEventsSaveData.OrderBy(x => x.time).ToList();
-
             CustomBeatmapData customBeatmapData = new CustomBeatmapData(4);
 
-            foreach (CustomBeatmapSaveData.CustomEventData customEventData in customEventsSaveData)
+            if (BeatmapSaveData != null)
             {
-                // Same math from BeatmapDataLoader
-                int bpmChangesDataIdx = 0;
-                float time = customEventData.time;
-                while (bpmChangesDataIdx < bpmChanges.Count - 1 && bpmChanges[bpmChangesDataIdx + 1].bpmChangeStartBpmTime < time)
+                List<CustomBeatmapSaveData.CustomEventData> customEventsSaveData = BeatmapSaveData.customEvents;
+                customEventsSaveData = customEventsSaveData.OrderBy(x => x.time).ToList();
+
+                foreach (CustomBeatmapSaveData.CustomEventData customEventData in customEventsSaveData)
                 {
-                    bpmChangesDataIdx++;
+                    // Same math from BeatmapDataLoader
+                    int bpmChangesDataIdx = 0;
+                    float time = customEventData.time;
+                    while (bpmChangesDataIdx < bpmChanges.Count - 1 && bpmChanges[bpmChangesDataIdx + 1].bpmChangeStartBpmTime < time)
+                    {
+                        bpmChangesDataIdx++;
+                    }
+
+                    BeatmapDataLoader.BpmChangeData bpmchangeData = bpmChanges[bpmChangesDataIdx];
+                    float realTime = bpmchangeData.bpmChangeStartTime + beatmapDataLoader.GetRealTimeFromBPMTime(time - bpmchangeData.bpmChangeStartBpmTime, bpmchangeData.bpm, shuffle, shufflePeriod);
+
+                    customBeatmapData.AddCustomEventData(new CustomEventData(realTime, customEventData.type, customEventData.data));
                 }
 
-                BeatmapDataLoader.BpmChangeData bpmchangeData = bpmChanges[bpmChangesDataIdx];
-                float realTime = bpmchangeData.bpmChangeStartTime + beatmapDataLoader.GetRealTimeFromBPMTime(time - bpmchangeData.bpmChangeStartBpmTime, bpmchangeData.bpm, shuffle, shufflePeriod);
-
-                customBeatmapData.AddCustomEventData(new CustomEventData(realTime, customEventData.type, customEventData.data));
+                customBeatmapData.SetCustomData(BeatmapSaveData.customData);
+                customBeatmapData.SetLevelCustomData(BeatmapCustomData, LevelCustomData);
             }
-
-            customBeatmapData.SetCustomData(CustomBeatmapSaveData.customData);
+            else
+            {
+                customBeatmapData.SetCustomData(new Dictionary<string, object>());
+                customBeatmapData.SetLevelCustomData(new Dictionary<string, object>(), new Dictionary<string, object>());
+            }
 
             return customBeatmapData;
         }

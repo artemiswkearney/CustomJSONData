@@ -1,9 +1,27 @@
 ﻿namespace CustomJSONData.HarmonyPatches
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using CustomJSONData.CustomBeatmap;
     using HarmonyLib;
+    using static BeatmapDataLoaderGetBeatmapDataFromBeatmapSaveData;
+
+    [HarmonyPatch(typeof(CustomLevelLoader))]
+    [HarmonyPatch("LoadBeatmapDataBeatmapData")]
+    internal class CustomLevelLoaderLoadingStopwatch
+    {
+        private static void Prefix(out Stopwatch __state)
+        {
+            __state = Stopwatch.StartNew();
+        }
+
+        private static void Postfix(Stopwatch __state)
+        {
+            __state.Stop();
+            Logger.Log($"Loading took: {__state.ElapsedMilliseconds} ms");
+        }
+    }
 
     [HarmonyPatch(typeof(CustomLevelLoader))]
     [HarmonyPatch("LoadCustomLevelInfoSaveData")]
@@ -38,7 +56,13 @@
                 List<BeatmapSaveData.WaypointData> waypoints = saveData.waypoints;
                 BeatmapSaveData.SpecialEventKeywordFiltersData specialEventsKeywordFilters = saveData.specialEventsKeywordFilters;
 
-                BeatmapDataLoaderGetBeatmapDataFromBeatmapSaveData.CustomBeatmapSaveData = saveData;
+                BeatmapSaveData = saveData;
+                if (standardLevelInfoSaveData is CustomLevelInfoSaveData customLevelInfoSaveData)
+                {
+                    BeatmapCustomData = customLevelInfoSaveData.beatmapCustomDatasByFilename[difficultyFileName];
+                    LevelCustomData = customLevelInfoSaveData.customData;
+                }
+
                 __result = ____beatmapDataLoader.GetBeatmapDataFromBeatmapSaveData(notes, waypoints, obstacles, events, specialEventsKeywordFilters, standardLevelInfoSaveData.beatsPerMinute, standardLevelInfoSaveData.shuffle, standardLevelInfoSaveData.shufflePeriod);
             }
 
@@ -47,10 +71,9 @@
 
         private static void Postfix(BeatmapData __result, string difficultyFileName, StandardLevelInfoSaveData standardLevelInfoSaveData)
         {
-            if (__result != null && __result is CustomBeatmapData customBeatmapData && standardLevelInfoSaveData is CustomLevelInfoSaveData customLevelInfoSaveData)
-            {
-                customBeatmapData.SetLevelCustomData(customLevelInfoSaveData.beatmapCustomDatasByFilename[difficultyFileName], customLevelInfoSaveData.customData);
-            }
+            BeatmapSaveData = null;
+            BeatmapCustomData = null;
+            LevelCustomData = null;
         }
     }
 }

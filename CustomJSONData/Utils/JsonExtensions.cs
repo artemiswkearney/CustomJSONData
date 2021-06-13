@@ -6,7 +6,7 @@
 
     internal static class JsonExtensions
     {
-        internal static void ReadToDictionary(this JsonReader reader, Dictionary<string, object> dictionary, Action<string> specialCase = null) => ObjectReadObject(reader, dictionary, specialCase);
+        internal static void ReadToDictionary(this JsonReader reader, Dictionary<string, object> dictionary, Func<string, bool> specialCase = null) => ObjectReadObject(reader, dictionary, specialCase);
 
         internal static void ReadObject(this JsonReader reader, Action<object> action)
         {
@@ -79,7 +79,7 @@
             throw new JsonSerializationException("Unexpected end when reading Dictionary.");
         }
 
-        private static object ObjectReadObject(JsonReader reader, Dictionary<string, object> dictionary = null, Action<string> specialCase = null)
+        private static object ObjectReadObject(JsonReader reader, Dictionary<string, object> dictionary = null, Func<string, bool> specialCase = null)
         {
             if (dictionary == null)
             {
@@ -93,19 +93,17 @@
                     case JsonToken.PropertyName:
                         string propertyName = reader.Value.ToString();
 
-                        if (specialCase != null)
+                        if (specialCase != null && !specialCase(propertyName))
                         {
-                            specialCase(propertyName);
+                            break;
                         }
-                        else
-                        {
-                            if (!reader.Read())
-                            {
-                                throw new JsonSerializationException("Unexpected end when reading Dictionary.");
-                            }
 
-                            dictionary[propertyName] = ObjectReadValue(reader);
+                        if (!reader.Read())
+                        {
+                            throw new JsonSerializationException("Unexpected end when reading Dictionary.");
                         }
+
+                        dictionary[propertyName] = ObjectReadValue(reader);
 
                         break;
 

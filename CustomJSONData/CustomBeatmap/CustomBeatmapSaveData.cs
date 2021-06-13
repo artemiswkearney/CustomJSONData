@@ -287,7 +287,7 @@
                             case "_customData":
                                 reader.ReadToDictionary(customData, propertyName =>
                                 {
-                                    if (propertyName == "_customEvemts")
+                                    if (propertyName == "_customEvents")
                                     {
                                         reader.ReadObjectArray(() =>
                                         {
@@ -318,7 +318,11 @@
 
                                             customEvents.Add(new CustomEventData(time, type, data));
                                         });
+
+                                        return false;
                                     }
+
+                                    return true;
                                 });
 
                                 break;

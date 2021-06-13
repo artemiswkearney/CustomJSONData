@@ -13,12 +13,13 @@
 
         private readonly List<CustomEventCallbackData> _customEventCallbackData = new List<CustomEventCallbackData>();
 
-        private CustomBeatmapData _customBeatmapData;
         private BeatmapObjectCallbackController _beatmapObjectCallbackController;
 
         public delegate void CustomEventCallback(CustomEventData eventData);
 
-        public static event Action<CustomEventCallbackController> customEventCallbackControllerInit;
+        public static event Action<CustomEventCallbackController> didInitEvent;
+
+        public CustomBeatmapData BeatmapData { get; private set; }
 
         public IAudioTimeSource AudioTimeSource => _audioTimeSourceAccessor(ref _beatmapObjectCallbackController);
 
@@ -36,12 +37,9 @@
             _customEventCallbackData?.Remove(callbackData);
         }
 
-        internal void SetNewBeatmapData(BeatmapData beatmapData)
+        internal void SetNewBeatmapData(IReadonlyBeatmapData beatmapData)
         {
-            if (beatmapData is CustomBeatmapData customBeatmapData)
-            {
-                _customBeatmapData = customBeatmapData;
-            }
+            BeatmapData = (CustomBeatmapData)beatmapData;
 
             foreach (CustomEventCallbackData customEventCallbackData in _customEventCallbackData)
             {
@@ -49,22 +47,23 @@
             }
         }
 
-        internal void Init(BeatmapObjectCallbackController beatmapObjectCallbackController)
+        internal void Init(BeatmapObjectCallbackController beatmapObjectCallbackController, IReadonlyBeatmapData beatmapData)
         {
-            customEventCallbackControllerInit?.Invoke(this);
             _beatmapObjectCallbackController = beatmapObjectCallbackController;
+            SetNewBeatmapData(beatmapData);
+            didInitEvent?.Invoke(this);
         }
 
         private void LateUpdate()
         {
-            if (_beatmapObjectCallbackController.enabled && _customBeatmapData != null)
+            if (_beatmapObjectCallbackController.enabled && BeatmapData != null)
             {
                 for (int l = 0; l < _customEventCallbackData.Count; l++)
                 {
                     CustomEventCallbackData customEventCallbackData = _customEventCallbackData[l];
-                    while (customEventCallbackData.nextEventIndex < _customBeatmapData.customEventsData.Count)
+                    while (customEventCallbackData.nextEventIndex < BeatmapData.customEventsData.Count)
                     {
-                        CustomEventData customEventData = _customBeatmapData.customEventsData[customEventCallbackData.nextEventIndex];
+                        CustomEventData customEventData = BeatmapData.customEventsData[customEventCallbackData.nextEventIndex];
                         if (customEventData.time - customEventCallbackData.aheadTime >= AudioTimeSource.songTime)
                         {
                             break;

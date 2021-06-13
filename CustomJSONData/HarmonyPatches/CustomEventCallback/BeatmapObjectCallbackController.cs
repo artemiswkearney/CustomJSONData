@@ -6,9 +6,9 @@
     [HarmonyPatch("Start")]
     internal class BeatmapObjectCallbackControllerStart
     {
-        private static void Prefix(BeatmapObjectCallbackController __instance)
+        private static void Postfix(BeatmapObjectCallbackController __instance, IReadonlyBeatmapData ____beatmapData)
         {
-            __instance.gameObject.AddComponent<CustomEventCallbackController>().Init(__instance);
+            __instance.gameObject.AddComponent<CustomEventCallbackController>().Init(__instance, ____beatmapData);
         }
     }
 
@@ -16,7 +16,7 @@
     [HarmonyPatch("SetNewBeatmapData")]
     internal class BeatmapObjectCallbackControllerSetNewBeatmapData
     {
-        private static void Postfix(BeatmapObjectCallbackController __instance, BeatmapData beatmapData)
+        private static void Postfix(BeatmapObjectCallbackController __instance, IReadonlyBeatmapData beatmapData)
         {
             __instance.GetComponent<CustomEventCallbackController>()?.SetNewBeatmapData(beatmapData);
         }
