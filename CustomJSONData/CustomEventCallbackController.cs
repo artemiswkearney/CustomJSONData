@@ -21,6 +21,8 @@
 
         public CustomBeatmapData BeatmapData { get; private set; }
 
+        public BeatmapObjectCallbackController BeatmapObjectCallbackController => _beatmapObjectCallbackController;
+
         public IAudioTimeSource AudioTimeSource => _audioTimeSourceAccessor(ref _beatmapObjectCallbackController);
 
         public float SpawningStartTime => _spawningStartTimeAccessor(ref _beatmapObjectCallbackController);
