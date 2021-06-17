@@ -5,7 +5,7 @@
     using System.Linq;
     using Newtonsoft.Json;
 
-    internal class CustomBeatmapSaveData : BeatmapSaveData
+    public class CustomBeatmapSaveData : BeatmapSaveData
     {
         private CustomBeatmapSaveData(
             string version,
@@ -23,9 +23,9 @@
             this.customEvents = customEvents;
         }
 
-        internal List<CustomEventData> customEvents { get; }
+        public List<CustomEventData> customEvents { get; }
 
-        internal Dictionary<string, object> customData { get; }
+        public Dictionary<string, object> customData { get; }
 
         internal static CustomBeatmapSaveData Deserialize(string path)
         {
@@ -342,7 +342,7 @@
                 customEvents);
         }
 
-        internal new class EventData : BeatmapSaveData.EventData
+        public new class EventData : BeatmapSaveData.EventData
         {
             internal EventData(float time, BeatmapEventType type, int value, Dictionary<string, object> customData)
                 : base(time, type, value)
@@ -350,10 +350,10 @@
                 this.customData = customData;
             }
 
-            internal Dictionary<string, object> customData { get; }
+            public Dictionary<string, object> customData { get; }
         }
 
-        internal class CustomEventData
+        public class CustomEventData
         {
             internal CustomEventData(float time, string type, Dictionary<string, object> data)
             {
@@ -362,14 +362,14 @@
                 this.data = data;
             }
 
-            internal float time { get; }
+            public float time { get; }
 
-            internal string type { get; }
+            public string type { get; }
 
-            internal Dictionary<string, object> data { get; }
+            public Dictionary<string, object> data { get; }
         }
 
-        internal new class NoteData : BeatmapSaveData.NoteData
+        public new class NoteData : BeatmapSaveData.NoteData
         {
             internal NoteData(float time, int lineIndex, NoteLineLayer lineLayer, NoteType type, NoteCutDirection cutDirection, Dictionary<string, object> customData)
                 : base(time, lineIndex, lineLayer, type, cutDirection)
@@ -377,10 +377,10 @@
                 this.customData = customData;
             }
 
-            internal Dictionary<string, object> customData { get; }
+            public Dictionary<string, object> customData { get; }
         }
 
-        internal new class WaypointData : BeatmapSaveData.WaypointData
+        public new class WaypointData : BeatmapSaveData.WaypointData
         {
             public WaypointData(float time, int lineIndex, NoteLineLayer lineLayer, OffsetDirection offsetDirection, Dictionary<string, object> customData)
                 : base(time, lineIndex, lineLayer, offsetDirection)
@@ -388,10 +388,10 @@
                 this.customData = customData;
             }
 
-            internal Dictionary<string, object> customData { get; }
+            public Dictionary<string, object> customData { get; }
         }
 
-        internal new class ObstacleData : BeatmapSaveData.ObstacleData
+        public new class ObstacleData : BeatmapSaveData.ObstacleData
         {
             public ObstacleData(float time, int lineIndex, ObstacleType type, float duration, int width, Dictionary<string, object> customData)
                 : base(time, lineIndex, type, duration, width)
@@ -399,7 +399,7 @@
                 this.customData = customData;
             }
 
-            internal Dictionary<string, object> customData { get; }
+            public Dictionary<string, object> customData { get; }
         }
     }
 }

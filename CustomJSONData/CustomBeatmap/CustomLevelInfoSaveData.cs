@@ -4,7 +4,7 @@
     using System.IO;
     using Newtonsoft.Json;
 
-    internal class CustomLevelInfoSaveData : StandardLevelInfoSaveData
+    public class CustomLevelInfoSaveData : StandardLevelInfoSaveData
     {
         internal CustomLevelInfoSaveData(
             string version,
@@ -47,9 +47,9 @@
             this.beatmapCustomDatasByFilename = beatmapCustomDatasByFilename;
         }
 
-        internal Dictionary<string, object> customData { get; }
+        public Dictionary<string, object> customData { get; }
 
-        internal Dictionary<string, Dictionary<string, object>> beatmapCustomDatasByFilename { get; }
+        public Dictionary<string, Dictionary<string, object>> beatmapCustomDatasByFilename { get; }
 
         internal static CustomLevelInfoSaveData Deserialize(string path)
         {
@@ -201,7 +201,7 @@
                                                     });
 
                                                     beatmapCustomDatasByFilename[beatmapFilename] = data;
-                                                    difficultyBeatmaps.Add(new DifficultyBeatmap(difficulty, difficultyRank, beatmapFilename, noteJumpMovementSpeed, noteJumpStartBeatOffset));
+                                                    difficultyBeatmaps.Add(new DifficultyBeatmap(difficulty, difficultyRank, beatmapFilename, noteJumpMovementSpeed, noteJumpStartBeatOffset, data));
                                                 });
 
                                                 break;
@@ -244,6 +244,17 @@
                 difficultyBeatmapSets.ToArray(),
                 customData,
                 beatmapCustomDatasByFilename);
+        }
+
+        public new class DifficultyBeatmap : StandardLevelInfoSaveData.DifficultyBeatmap
+        {
+            internal DifficultyBeatmap(string difficultyName, int difficultyRank, string beatmapFilename, float noteJumpMovementSpeed, float noteJumpStartBeatOffset, Dictionary<string, object> customData)
+            : base(difficultyName, difficultyRank, beatmapFilename, noteJumpMovementSpeed, noteJumpStartBeatOffset)
+            {
+                this.customData = customData;
+            }
+
+            public Dictionary<string, object> customData { get; }
         }
     }
 }
