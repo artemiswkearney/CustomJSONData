@@ -1,13 +1,13 @@
 ﻿namespace CustomJSONData.HarmonyPatches
 {
     using System.Collections.Generic;
-    using System.Diagnostics;
+    ////using System.Diagnostics;
     using System.IO;
     using CustomJSONData.CustomBeatmap;
     using HarmonyLib;
     using static BeatmapDataLoaderGetBeatmapDataFromBeatmapSaveData;
 
-    [HarmonyPatch(typeof(CustomLevelLoader))]
+    /*[HarmonyPatch(typeof(CustomLevelLoader))]
     [HarmonyPatch("LoadBeatmapDataBeatmapData")]
     internal class CustomLevelLoaderLoadingStopwatch
     {
@@ -21,7 +21,7 @@
             __state.Stop();
             Logger.Log($"Loading took: {__state.ElapsedMilliseconds} ms");
         }
-    }
+    }*/
 
     [HarmonyPatch(typeof(CustomLevelLoader))]
     [HarmonyPatch("LoadCustomLevelInfoSaveData")]
