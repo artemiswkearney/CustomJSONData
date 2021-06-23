@@ -8,7 +8,10 @@
     {
         private static void Postfix(BeatmapObjectCallbackController __instance, IReadonlyBeatmapData ____beatmapData)
         {
-            __instance.gameObject.AddComponent<CustomEventCallbackController>().Init(__instance, ____beatmapData);
+            if (____beatmapData is CustomBeatmap.CustomBeatmapData)
+            {
+                __instance.gameObject.AddComponent<CustomEventCallbackController>().Init(__instance, ____beatmapData);
+            }
         }
     }
 
