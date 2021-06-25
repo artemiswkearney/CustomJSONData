@@ -96,7 +96,7 @@
                                 songSubName = reader.ReadAsString();
                                 break;
 
-                            case "songAuthorName":
+                            case "_songAuthorName":
                                 songAuthorName = reader.ReadAsString();
                                 break;
 
